@@ -29,7 +29,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-stone-700 mb-1">Aktuelles Gewicht (kg)</label>
-            <input type="number" id="gewicht" placeholder="z.B. 600" class="w-full p-2 border border-pink-200 rounded">
+            <input type="number" id="gewicht" placeholder="z.B. 300" class="w-full p-2 border border-pink-200 rounded">
           </div>
           <div>
             <label class="block text-sm font-medium text-stone-700 mb-1">Zielgewicht (kg)</label>
@@ -66,13 +66,13 @@
             <select id="haltung" class="w-full p-2 border rounded border-pink-200 text-stone-700">
               <option value="standard" selected>Standard</option>
               <option value="offenstall">Offenstall (+10%)</option>
-              <option value="aktivstall">Aktivstall (+15%)</option>
+              <option value="aktivstall">Aktivstall (+10%)</option>
             </select>
           </div>
           <div class="flex items-center space-x-2">
             <label class="flex items-center text-stone-700 cursor-pointer">
               <input type="checkbox" id="isSenior" class="mr-2 h-4 w-4 border-pink-300 text-pink-500">
-              Senior-Pferd (+15% Energiebedarf)
+              Senior-Pferd (+10%)
             </label>
             <!-- Button nur bei Senior sichtbar -->
             <button id="berechnenSenior" class="hidden p-2 bg-pink-300 hover:bg-pink-400 text-stone-800 rounded">
@@ -100,12 +100,19 @@
         </div>
         <div id="ergebnisBereich" class="hidden">
           <div class="grid grid-cols-1 gap-3">
-            <!-- Für jeden Nährstoff: Anzeige von Bedarf vs. Gesamtangebot -->
+            <!-- Anzeige: Bedarf vs. Angebot pro Nährstoff -->
             <div class="flex items-center">
               <div id="ampel-trockensubstanz" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
               <p class="text-stone-700">
                 Trockensubstanz: Bedarf: <span id="bedarfTrockensubstanz">0.00</span> kg, 
                 Gesamt: <span id="gesamtTrockensubstanz">0.00</span> kg
+              </p>
+            </div>
+            <div class="flex items-center">
+              <div id="ampel-rohfaser" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Rohfaser: Bedarf: <span id="bedarfRohfaser">0.00</span> kg, 
+                Gesamt: <span id="gesamtRohfaser">0.00</span> kg
               </p>
             </div>
             <div class="flex items-center">
@@ -122,21 +129,6 @@
                 Gesamt: <span id="gesamtEnergie">0.00</span> MJ
               </p>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-zucker" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Zucker: Bedarf: <span id="bedarfZucker">0.00</span> kg, 
-                Gesamt: <span id="gesamtZucker">0.00</span> kg
-              </p>
-            </div>
-            <div class="flex items-center">
-              <div id="ampel-rohfaser" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Rohfaser: Bedarf: <span id="bedarfRohfaser">0.00</span> kg, 
-                Gesamt: <span id="gesamtRohfaser">0.00</span> kg
-              </p>
-            </div>
-            <!-- Weitere Nährstoffe (Calcium, Phosphor, Magnesium, Zink, Natrium, Lysin, Methionin, Threonin) analog -->
             <div class="flex items-center">
               <div id="ampel-calcium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
               <p class="text-stone-700">
@@ -159,17 +151,25 @@
               </p>
             </div>
             <div class="flex items-center">
-              <div id="ampel-zink" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Zink: Bedarf: <span id="bedarfZink">0.00</span> kg, 
-                Gesamt: <span id="gesamtZink">0.00</span> kg
-              </p>
-            </div>
-            <div class="flex items-center">
               <div id="ampel-natrium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
               <p class="text-stone-700">
                 Natrium: Bedarf: <span id="bedarfNatrium">0.00</span> kg, 
                 Gesamt: <span id="gesamtNatrium">0.00</span> kg
+              </p>
+            </div>
+            <div class="flex items-center">
+              <div id="ampel-zucker" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Zucker: Bedarf: <span id="bedarfZucker">0.00</span> kg, 
+                Gesamt: <span id="gesamtZucker">0.00</span> kg
+              </p>
+            </div>
+            <!-- Zusätzliche Nährstoffe -->
+            <div class="flex items-center">
+              <div id="ampel-zink" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Zink: Bedarf: <span id="bedarfZink">0.00</span> kg, 
+                Gesamt: <span id="gesamtZink">0.00</span> kg
               </p>
             </div>
             <div class="flex items-center">
@@ -233,7 +233,7 @@
   </div>
   
   <script>
-    // Vordefinierte Werte für übliche Futtermittel (Presets)
+    // --- Vordefinierte Werte für übliche Futtermittel (Presets) bleiben unverändert ---
     const feedPresets = {
       "heu": {
         name: "Heu",
@@ -285,29 +285,96 @@
       }
     };
     
+    // --- Bedarfstabellen aus der PDF (Werte in Gramm bzw. MJ) ---
+    const demandTables = {
+      Erhaltung: {
+        100: { TM: 2800, Rohfaser: 500, Rohprotein: 119, Energie: 16, Kalzium: 5, Phosphor: 4, Magnesium: 2, Natrium: 1, Zucker: 400 },
+        200: { TM: 5000, Rohfaser: 1000, Rohprotein: 195, Energie: 28, Kalzium: 9, Phosphor: 6, Magnesium: 3, Natrium: 1, Zucker: 800 },
+        300: { TM: 6500, Rohfaser: 1500, Rohprotein: 270, Energie: 37, Kalzium: 12, Phosphor: 8, Magnesium: 4, Natrium: 2, Zucker: 1200 },
+        400: { TM: 8000, Rohfaser: 2000, Rohprotein: 323, Energie: 47, Kalzium: 15, Phosphor: 10, Magnesium: 5, Natrium: 2, Zucker: 1600 },
+        500: { TM: 10000, Rohfaser: 2500, Rohprotein: 386, Energie: 55, Kalzium: 17, Phosphor: 12, Magnesium: 6, Natrium: 3, Zucker: 2000 },
+        600: { TM: 12000, Rohfaser: 3000, Rohprotein: 444, Energie: 63, Kalzium: 20, Phosphor: 14, Magnesium: 7, Natrium: 3, Zucker: 2400 },
+        700: { TM: 12500, Rohfaser: 3500, Rohprotein: 503, Energie: 71, Kalzium: 22, Phosphor: 15, Magnesium: 8, Natrium: 4, Zucker: 2800 },
+        800: { TM: 13500, Rohfaser: 4000, Rohprotein: 549, Energie: 78, Kalzium: 25, Phosphor: 17, Magnesium: 9, Natrium: 4, Zucker: 3200 }
+      },
+      Leichte: {
+        100: { TM: 2800, Rohfaser: 500, Rohprotein: 141, Energie: 21, Kalzium: 5, Phosphor: 4, Magnesium: 2, Natrium: 4, Zucker: 400 },
+        200: { TM: 5000, Rohfaser: 1000, Rohprotein: 238, Energie: 35, Kalzium: 9, Phosphor: 6, Magnesium: 3, Natrium: 6, Zucker: 800 },
+        300: { TM: 6500, Rohfaser: 1500, Rohprotein: 322, Energie: 47, Kalzium: 12, Phosphor: 8, Magnesium: 4, Natrium: 8, Zucker: 1200 },
+        400: { TM: 8000, Rohfaser: 2000, Rohprotein: 377, Energie: 58, Kalzium: 15, Phosphor: 10, Magnesium: 5, Natrium: 11, Zucker: 1600 },
+        500: { TM: 10000, Rohfaser: 2500, Rohprotein: 445, Energie: 69, Kalzium: 17, Phosphor: 13, Magnesium: 6, Natrium: 15, Zucker: 2000 },
+        600: { TM: 12000, Rohfaser: 3000, Rohprotein: 517, Energie: 79, Kalzium: 20, Phosphor: 14, Magnesium: 6, Natrium: 17, Zucker: 2400 },
+        700: { TM: 12500, Rohfaser: 3500, Rohprotein: 581, Energie: 88, Kalzium: 22, Phosphor: 15, Magnesium: 7, Natrium: 17, Zucker: 2800 },
+        800: { TM: 13500, Rohfaser: 4000, Rohprotein: 643, Energie: 98, Kalzium: 25, Phosphor: 17, Magnesium: 8, Natrium: 19, Zucker: 3200 }
+      },
+      Mittlere: {
+        100: { TM: 2800, Rohfaser: 400, Rohprotein: 153, Energie: 25, Kalzium: 5, Phosphor: 4, Magnesium: 2, Natrium: 6, Zucker: 400 },
+        200: { TM: 5000, Rohfaser: 800, Rohprotein: 269, Energie: 42, Kalzium: 9, Phosphor: 6, Magnesium: 3, Natrium: 9, Zucker: 800 },
+        300: { TM: 6500, Rohfaser: 1200, Rohprotein: 365, Energie: 56, Kalzium: 12, Phosphor: 8, Magnesium: 4, Natrium: 14, Zucker: 1200 },
+        400: { TM: 8000, Rohfaser: 1600, Rohprotein: 456, Energie: 70, Kalzium: 15, Phosphor: 10, Magnesium: 5, Natrium: 20, Zucker: 1600 },
+        500: { TM: 10000, Rohfaser: 2000, Rohprotein: 540, Energie: 82, Kalzium: 17, Phosphor: 13, Magnesium: 6, Natrium: 27, Zucker: 2000 },
+        600: { TM: 12000, Rohfaser: 2400, Rohprotein: 618, Energie: 95, Kalzium: 20, Phosphor: 14, Magnesium: 6, Natrium: 31, Zucker: 2400 },
+        700: { TM: 12500, Rohfaser: 2800, Rohprotein: 695, Energie: 106, Kalzium: 22, Phosphor: 15, Magnesium: 7, Natrium: 30, Zucker: 2800 },
+        800: { TM: 13500, Rohfaser: 3200, Rohprotein: 768, Energie: 117, Kalzium: 25, Phosphor: 17, Magnesium: 8, Natrium: 34, Zucker: 3200 }
+      },
+      Schwere: {
+        100: { TM: 2800, Rohfaser: 400, Rohprotein: 183, Energie: 29, Kalzium: 5, Phosphor: 4, Magnesium: 2, Natrium: 9, Zucker: 400 },
+        200: { TM: 5000, Rohfaser: 800, Rohprotein: 313, Energie: 48, Kalzium: 9, Phosphor: 6, Magnesium: 3, Natrium: 14, Zucker: 800 },
+        300: { TM: 6500, Rohfaser: 1200, Rohprotein: 433, Energie: 66, Kalzium: 12, Phosphor: 8, Magnesium: 4, Natrium: 21, Zucker: 1200 },
+        400: { TM: 8000, Rohfaser: 1600, Rohprotein: 513, Energie: 81, Kalzium: 15, Phosphor: 10, Magnesium: 5, Natrium: 29, Zucker: 1600 },
+        500: { TM: 10000, Rohfaser: 2000, Rohprotein: 607, Energie: 96, Kalzium: 17, Phosphor: 13, Magnesium: 6, Natrium: 39, Zucker: 2000 },
+        600: { TM: 12000, Rohfaser: 2400, Rohprotein: 700, Energie: 110, Kalzium: 20, Phosphor: 14, Magnesium: 6, Natrium: 44, Zucker: 2400 },
+        700: { TM: 12500, Rohfaser: 2800, Rohprotein: 776, Energie: 124, Kalzium: 22, Phosphor: 15, Magnesium: 7, Natrium: 44, Zucker: 2800 },
+        800: { TM: 13500, Rohfaser: 3200, Rohprotein: 858, Energie: 137, Kalzium: 25, Phosphor: 17, Magnesium: 8, Natrium: 48, Zucker: 3200 }
+      }
+    };
+    
+    // --- Lineare Interpolation der Bedarfwerte aus den Tabellen ---
+    function getDemandValues(weight, intensityKey) {
+      let table = demandTables[intensityKey];
+      const weights = [100,200,300,400,500,600,700,800];
+      if (weight < 100) weight = 100;
+      if (weight > 800) weight = 800;
+      let lower = weights[0], upper = weights[weights.length - 1];
+      for (let i = 0; i < weights.length; i++) {
+        if (weights[i] <= weight) lower = weights[i];
+        if (weights[i] >= weight) { upper = weights[i]; break; }
+      }
+      if (lower === upper) return table[lower];
+      let frac = (weight - lower) / (upper - lower);
+      let result = {};
+      const nutrients = ["TM", "Rohfaser", "Rohprotein", "Energie", "Kalzium", "Phosphor", "Magnesium", "Natrium", "Zucker"];
+      nutrients.forEach(nutrient => {
+        let lowVal = table[lower][nutrient];
+        let upVal = table[upper][nutrient];
+        result[nutrient] = lowVal + (upVal - lowVal) * frac;
+      });
+      return result;
+    }
+    
+    // --- Globale Variablen ---
     let futtermittelListe = [];
     let naechsteId = 1;
-    // Bedarfobjekt: errechneter Nährstoffbedarf basierend auf den Pferdedaten
+    // Bedarfobjekt: Errechnete Zielwerte (in kg bzw. MJ)
     let bedarf = {
-      heu: 0,
       trockensubstanz: 0,
+      rohfaser: 0,
       rohprotein: 0,
       energie: 0,
-      zucker: 0,
-      rohfaser: 0,
       calcium: 0,
       phosphor: 0,
       magnesium: 0,
-      zink: 0,
       natrium: 0,
+      zucker: 0,
+      zink: 0,
       lysin: 0,
       methionin: 0,
       threonin: 0
     };
     let gewichtsModus = 'halten';
     
+    // --- Event Listener beim Laden des Dokuments ---
     document.addEventListener('DOMContentLoaded', function() {
-      // Einen ersten Futtermittel-Eintrag hinzufügen (evtl. als Ausgangspunkt)
       addFuttermittel();
       const inputs = ['gewicht', 'zielgewicht', 'pferdetyp', 'jahreszeit', 'aktivitaet', 'haltung'];
       inputs.forEach(id => {
@@ -320,7 +387,7 @@
       });
       
       document.getElementById('isSenior').addEventListener('change', function() {
-        if(this.checked) {
+        if (this.checked) {
           document.getElementById('berechnenSenior').classList.remove('hidden');
         } else {
           document.getElementById('berechnenSenior').classList.add('hidden');
@@ -332,11 +399,10 @@
       document.getElementById('addFuttermittel').addEventListener('click', addFuttermittel);
     });
     
-    // Fügt einen neuen Futtermittel-Eintrag hinzu
+    // --- Futtermittel hinzufügen (inkl. Preset-Auswahl, unverändert wie vorher) ---
     function addFuttermittel() {
       const container = document.getElementById('futtermittelContainer');
       const id = naechsteId++;
-      // Standardwerte: Werte werden in g/kg (bzw. MJ/kg) eingegeben
       const futtermittel = {
         id,
         name: '',
@@ -441,10 +507,9 @@
       `;
       container.appendChild(div);
       
-      // Preset-Dropdown: Bei Auswahl werden die vordefinierten Werte geladen.
       document.getElementById(`preset-${id}`).addEventListener('change', (e) => {
         let preset = e.target.value;
-        if(preset !== "custom" && feedPresets[preset]) {
+        if (preset !== "custom" && feedPresets[preset]) {
           const presetData = feedPresets[preset];
           document.getElementById(`trockensubstanz-${id}`).value = presetData.trockensubstanz;
           document.getElementById(`rohprotein-${id}`).value = presetData.rohprotein;
@@ -459,13 +524,11 @@
           document.getElementById(`lysin-${id}`).value = presetData.lysin;
           document.getElementById(`methionin-${id}`).value = presetData.methionin;
           document.getElementById(`threonin-${id}`).value = presetData.threonin;
-          // Falls das Namensfeld leer ist, automatisch füllen
           let nameField = document.getElementById(`name-${id}`);
-          if(!nameField.value.trim()){
+          if (!nameField.value.trim()) {
             nameField.value = presetData.name;
             updateFuttermittel(id, "name", presetData.name);
           }
-          // Aktualisiere das interne Objekt
           updateFuttermittel(id, "trockensubstanz", presetData.trockensubstanz);
           updateFuttermittel(id, "rohprotein", presetData.rohprotein);
           updateFuttermittel(id, "energie", presetData.energie);
@@ -482,12 +545,11 @@
         }
       });
       
-      // Für alle Eingabefelder: Bei Änderung aktualisieren wir den internen Datensatz.
       const fields = ['name','menge','trockensubstanz','rohprotein','energie','zucker','rohfaser','calcium','phosphor','magnesium','zink','natrium','lysin','methionin','threonin'];
       fields.forEach(field => {
         document.getElementById(`${field}-${id}`).addEventListener('input', (e) => {
           let value = (field === 'name') ? e.target.value : parseFloat(e.target.value);
-          if(isNaN(value)) { value = 0; }
+          if (isNaN(value)) { value = 0; }
           updateFuttermittel(id, field, value);
         });
       });
@@ -495,39 +557,39 @@
     
     function updateFuttermittel(id, feld, wert) {
       const futtermittel = futtermittelListe.find(item => item.id === id);
-      if(futtermittel) {
+      if (futtermittel) {
         futtermittel[feld] = wert;
-        if(!document.getElementById('isSenior').checked) updateBedarfsberechnung();
+        if (!document.getElementById('isSenior').checked) updateBedarfsberechnung();
       }
     }
     
     function removeFuttermittel(id) {
       futtermittelListe = futtermittelListe.filter(item => item.id !== id);
       const element = document.getElementById(`futtermittel-${id}`);
-      if(element) { element.remove(); }
+      if (element) { element.remove(); }
       updateBedarfsberechnung();
     }
     
     function toggleFuttermittel(id) {
       const details = document.getElementById(`details-${id}`);
-      if(details) {
+      if (details) {
         details.classList.toggle('hidden');
       }
     }
     
-    // Berechnet den Bedarf basierend auf den Pferdedaten und zeigt diesen an.
+    // --- Bedarfsermittlung anhand der PDF-Werte und Modifier ---
     function updateBedarfsberechnung() {
       const gewicht = parseFloat(document.getElementById('gewicht').value) || 0;
       const zielgewicht = parseFloat(document.getElementById('zielgewicht').value) || 0;
       const pferdetyp = document.getElementById('pferdetyp').value;
+      const jahreszeit = document.getElementById('jahreszeit').value;
       const aktivitaet = document.getElementById('aktivitaet').value;
       const haltung = document.getElementById('haltung').value;
-      const jahreszeit = document.getElementById('jahreszeit').value;
       const isSenior = document.getElementById('isSenior').checked;
       
       const gewichtWarnung = document.getElementById('gewichtWarnung');
       const ergebnisBereich = document.getElementById('ergebnisBereich');
-      if(gewicht <= 0) {
+      if (gewicht <= 0) {
         gewichtWarnung.classList.remove('hidden');
         ergebnisBereich.classList.add('hidden');
         return;
@@ -536,10 +598,10 @@
         ergebnisBereich.classList.remove('hidden');
       }
       
-      if(zielgewicht > 0) {
-        if(zielgewicht > gewicht + 5) {
+      if (zielgewicht > 0) {
+        if (zielgewicht > gewicht + 5) {
           gewichtsModus = 'zunehmen';
-        } else if(zielgewicht < gewicht - 5) {
+        } else if (zielgewicht < gewicht - 5) {
           gewichtsModus = 'abnehmen';
         } else {
           gewichtsModus = 'halten';
@@ -548,78 +610,68 @@
         gewichtsModus = 'halten';
       }
       
-      // Automatische Berechnung des Heubedarfs (als reine Bedarfsermittlung)
-      let heuBedarf = gewicht * 0.015;
-      let typFaktor = 1.0;
-      switch(pferdetyp) {
-        case 'shetlandpony': typFaktor = 0.9; break;
-        case 'pony': typFaktor = 0.95; break;
-        case 'vollblut': typFaktor = 1.1; break;
-        case 'warmblut': typFaktor = 1.0; break;
-        case 'kaltblut': typFaktor = 0.95; break;
-        default: typFaktor = 1.0;
-      }
-      heuBedarf *= typFaktor;
-      switch(aktivitaet) {
-        case 'leicht': heuBedarf *= 1.1; break;
-        case 'mittel': heuBedarf *= 1.2; break;
-        case 'schwer': heuBedarf *= 1.3; break;
-      }
-      if(haltung === 'offenstall') {
-        heuBedarf *= 1.1;
-      } else if(haltung === 'aktivstall') {
-        heuBedarf *= 1.15;
-      }
-      if(jahreszeit === 'winter') {
-        heuBedarf *= 1.1;
-      }
-      if(isSenior) {
-        heuBedarf *= 1.15;
-      }
-      if(gewichtsModus === 'zunehmen') {
-        heuBedarf *= 1.1;
-      } else if(gewichtsModus === 'abnehmen') {
-        heuBedarf *= 0.85;
+      // Wählen der passenden Tabelle (Basistabelle: Erhaltung, Leichte, Mittlere oder Schwere Arbeit)
+      const intensityMapping = {
+        "erhaltung": "Erhaltung",
+        "leicht": "Leichte",
+        "mittel": "Mittlere",
+        "schwer": "Schwere"
+      };
+      const selectedTable = intensityMapping[aktivitaet] || "Erhaltung";
+      
+      // Berechne Basisbedarf aus der PDF-Tabelle (Werte in g bzw. MJ)
+      let baseDemand = getDemandValues(gewicht, selectedTable);
+      
+      // Modifier: Senior, Winter und Haltungsform (außer Standard) jeweils +10%
+      let multiplier = 1.0;
+      if (isSenior) multiplier *= 1.10;
+      if (jahreszeit === "winter") multiplier *= 1.10;
+      if (haltung !== "standard") multiplier *= 1.10;
+      
+      // Wende den Modifier an
+      for (let key in baseDemand) {
+        baseDemand[key] *= multiplier;
       }
       
-      // Errechnung der Nährstoffbedarfe basierend auf dem berechneten Heubedarf
-      bedarf.heu = heuBedarf;
-      bedarf.trockensubstanz = heuBedarf * 0.9;
-      bedarf.rohprotein = bedarf.trockensubstanz * 0.09;
-      bedarf.energie = bedarf.trockensubstanz * 2.5;
-      bedarf.zucker = bedarf.trockensubstanz * 0.1;
-      bedarf.rohfaser = bedarf.trockensubstanz * 0.25;
-      bedarf.calcium = bedarf.trockensubstanz * 0.02;
-      bedarf.phosphor = bedarf.trockensubstanz * 0.01;
-      bedarf.magnesium = bedarf.trockensubstanz * 0.005;
+      // Setze die Zielwerte (Bedarf) – Umrechnung in kg (außer Energie, die in MJ bleibt)
+      bedarf.trockensubstanz = baseDemand.TM / 1000;
+      bedarf.rohfaser = baseDemand.Rohfaser / 1000;
+      bedarf.rohprotein = baseDemand.Rohprotein / 1000;
+      bedarf.energie = baseDemand.Energie;
+      bedarf.calcium = baseDemand.Kalzium / 1000;
+      bedarf.phosphor = baseDemand.Phosphor / 1000;
+      bedarf.magnesium = baseDemand.Magnesium / 1000;
+      bedarf.natrium = baseDemand.Natrium / 1000;
+      bedarf.zucker = baseDemand.Zucker / 1000;
+      
+      // Zusätzliche Nährstoffe anhand von Standardfaktoren (bezogen auf TM)
       bedarf.zink = bedarf.trockensubstanz * 0.002;
-      bedarf.natrium = bedarf.trockensubstanz * 0.003;
       bedarf.lysin = bedarf.trockensubstanz * 0.004;
       bedarf.methionin = bedarf.trockensubstanz * 0.0015;
       bedarf.threonin = bedarf.trockensubstanz * 0.0025;
       
-      // Anzeige des berechneten Bedarfs
-      document.getElementById('bedarfHeu').textContent = heuBedarf.toFixed(2);
+      // Anzeige der ermittelten Bedarfswerte
+      document.getElementById('bedarfHeu').textContent = (baseDemand.TM / 1000).toFixed(2); // als Basiswert
       document.getElementById('bedarfTrockensubstanz').textContent = bedarf.trockensubstanz.toFixed(2);
+      document.getElementById('bedarfRohfaser').textContent = bedarf.rohfaser.toFixed(2);
       document.getElementById('bedarfRohprotein').textContent = bedarf.rohprotein.toFixed(2);
       document.getElementById('bedarfEnergie').textContent = bedarf.energie.toFixed(2);
-      document.getElementById('bedarfZucker').textContent = bedarf.zucker.toFixed(2);
-      document.getElementById('bedarfRohfaser').textContent = bedarf.rohfaser.toFixed(2);
       document.getElementById('bedarfCalcium').textContent = bedarf.calcium.toFixed(2);
       document.getElementById('bedarfPhosphor').textContent = bedarf.phosphor.toFixed(2);
       document.getElementById('bedarfMagnesium').textContent = bedarf.magnesium.toFixed(2);
-      document.getElementById('bedarfZink').textContent = bedarf.zink.toFixed(2);
       document.getElementById('bedarfNatrium').textContent = bedarf.natrium.toFixed(2);
+      document.getElementById('bedarfZucker').textContent = bedarf.zucker.toFixed(2);
+      document.getElementById('bedarfZink').textContent = bedarf.zink.toFixed(2);
       document.getElementById('bedarfLysin').textContent = bedarf.lysin.toFixed(2);
       document.getElementById('bedarfMethionin').textContent = bedarf.methionin.toFixed(2);
       document.getElementById('bedarfThreonin').textContent = bedarf.threonin.toFixed(2);
       
-      // Gesamtsummen der in der Futtermittelliste eingegebenen Werte berechnen
+      // Angebot (Gesamt) wird aus den vom Nutzer eingegebenen Futtermitteln ermittelt
       updateGesamtwerte();
       updateAnpassungen();
     }
     
-    // WICHTIG: Hier beginnen wir nun bei 0 – die "Gesamt"-Werte stammen ausschließlich aus den Futtermittel-Eingaben!
+    // --- Berechnung des Gesamtangebots (nur aus den Futtermittel-Eingaben) ---
     function updateGesamtwerte() {
       let gesamtMenge = 0;
       let gesamtTrockensubstanz = 0;
@@ -630,8 +682,8 @@
       let gesamtCalcium = 0;
       let gesamtPhosphor = 0;
       let gesamtMagnesium = 0;
-      let gesamtZink = 0;
       let gesamtNatrium = 0;
+      let gesamtZink = 0;
       let gesamtLysin = 0;
       let gesamtMethionin = 0;
       let gesamtThreonin = 0;
@@ -646,8 +698,8 @@
         gesamtCalcium += item.menge * (item.calcium / 1000);
         gesamtPhosphor += item.menge * (item.phosphor / 1000);
         gesamtMagnesium += item.menge * (item.magnesium / 1000);
-        gesamtZink += item.menge * (item.zink / 1000);
         gesamtNatrium += item.menge * (item.natrium / 1000);
+        gesamtZink += item.menge * (item.zink / 1000);
         gesamtLysin += item.menge * (item.lysin / 1000);
         gesamtMethionin += item.menge * (item.methionin / 1000);
         gesamtThreonin += item.menge * (item.threonin / 1000);
@@ -662,8 +714,8 @@
       document.getElementById('gesamtCalcium').textContent = gesamtCalcium.toFixed(2);
       document.getElementById('gesamtPhosphor').textContent = gesamtPhosphor.toFixed(2);
       document.getElementById('gesamtMagnesium').textContent = gesamtMagnesium.toFixed(2);
-      document.getElementById('gesamtZink').textContent = gesamtZink.toFixed(2);
       document.getElementById('gesamtNatrium').textContent = gesamtNatrium.toFixed(2);
+      document.getElementById('gesamtZink').textContent = gesamtZink.toFixed(2);
       document.getElementById('gesamtLysin').textContent = gesamtLysin.toFixed(2);
       document.getElementById('gesamtMethionin').textContent = gesamtMethionin.toFixed(2);
       document.getElementById('gesamtThreonin').textContent = gesamtThreonin.toFixed(2);
@@ -676,8 +728,8 @@
       updateAmpelfarbe('ampel-calcium', gesamtCalcium, bedarf.calcium);
       updateAmpelfarbe('ampel-phosphor', gesamtPhosphor, bedarf.phosphor);
       updateAmpelfarbe('ampel-magnesium', gesamtMagnesium, bedarf.magnesium);
-      updateAmpelfarbe('ampel-zink', gesamtZink, bedarf.zink);
       updateAmpelfarbe('ampel-natrium', gesamtNatrium, bedarf.natrium);
+      updateAmpelfarbe('ampel-zink', gesamtZink, bedarf.zink);
       updateAmpelfarbe('ampel-lysin', gesamtLysin, bedarf.lysin);
       updateAmpelfarbe('ampel-methionin', gesamtMethionin, bedarf.methionin);
       updateAmpelfarbe('ampel-threonin', gesamtThreonin, bedarf.threonin);
@@ -685,11 +737,11 @@
     
     function updateAmpelfarbe(elementId, supply, requirement) {
       const el = document.getElementById(elementId);
-      if(requirement > 0) {
+      if (requirement > 0) {
         const percent = (supply / requirement) * 100;
-        if(percent >= 90 && percent <= 110) {
+        if (percent >= 90 && percent <= 110) {
           el.className = 'w-4 h-4 rounded-full mr-2 bg-green-500';
-        } else if((percent >= 70 && percent < 90) || (percent > 110 && percent <= 130)) {
+        } else if ((percent >= 70 && percent < 90) || (percent > 110 && percent <= 130)) {
           el.className = 'w-4 h-4 rounded-full mr-2 bg-yellow-500';
         } else {
           el.className = 'w-4 h-4 rounded-full mr-2 bg-red-500';
@@ -704,62 +756,32 @@
       const anpassungenListe = document.getElementById('anpassungenListe');
       anpassungenListe.innerHTML = '';
       
-      if(gewichtsModus === 'zunehmen') {
+      if (gewichtsModus === 'zunehmen') {
         const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +10% für Gewichtszunahme';
+        li.textContent = 'Gewichtsziel: +10% Energiebedarf für Gewichtszunahme';
         anpassungenListe.appendChild(li);
-      } else if(gewichtsModus === 'abnehmen') {
+      } else if (gewichtsModus === 'abnehmen') {
         const li = document.createElement('li');
-        li.textContent = 'Energiebedarf -15% für Gewichtsabnahme';
-        anpassungenListe.appendChild(li);
-      }
-      if(document.getElementById('jahreszeit').value === 'winter') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +10% für Winterzeit';
+        li.textContent = 'Gewichtsziel: -15% Energiebedarf für Gewichtsabnahme';
         anpassungenListe.appendChild(li);
       }
-      if(document.getElementById('isSenior').checked) {
+      if (document.getElementById('jahreszeit').value === 'winter') {
         const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +15% für Senior-Pferd';
+        li.textContent = 'Winter: +10% Energiebedarf';
         anpassungenListe.appendChild(li);
       }
-      if(document.getElementById('haltung').value === 'offenstall') {
+      if (document.getElementById('isSenior').checked) {
         const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +10% für Offenstallhaltung';
-        anpassungenListe.appendChild(li);
-      } else if(document.getElementById('haltung').value === 'aktivstall') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +15% für Aktivstallhaltung';
+        li.textContent = 'Senior: +10% Energiebedarf';
         anpassungenListe.appendChild(li);
       }
-      if(document.getElementById('aktivitaet').value === 'leicht') {
+      if (document.getElementById('haltung').value !== 'standard') {
         const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +10% für leichte Arbeit';
-        anpassungenListe.appendChild(li);
-      } else if(document.getElementById('aktivitaet').value === 'mittel') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +20% für mittlere Arbeit';
-        anpassungenListe.appendChild(li);
-      } else if(document.getElementById('aktivitaet').value === 'schwer') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +30% für schwere Arbeit';
-        anpassungenListe.appendChild(li);
-      }
-      if(document.getElementById('pferdetyp').value === 'vollblut') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf +10% für Vollbluttyp';
-        anpassungenListe.appendChild(li);
-      } else if(document.getElementById('pferdetyp').value === 'pony' || document.getElementById('pferdetyp').value === 'kaltblut') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf -5% für effiziente Futterverwertung';
-        anpassungenListe.appendChild(li);
-      } else if(document.getElementById('pferdetyp').value === 'shetlandpony') {
-        const li = document.createElement('li');
-        li.textContent = 'Energiebedarf -10% für sehr effiziente Futterverwertung';
+        li.textContent = 'Haltungsform (' + document.getElementById('haltung').value + '): +10% Energiebedarf';
         anpassungenListe.appendChild(li);
       }
       
-      if(anpassungenListe.childNodes.length > 0) {
+      if (anpassungenListe.childNodes.length > 0) {
         anpassungenBereich.classList.remove('hidden');
       } else {
         anpassungenBereich.classList.add('hidden');
