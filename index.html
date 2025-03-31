@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pferdeliebehealthy Rationsrechner - Erweiterte Version</title>
+  <title>Pferdeliebehealthy Rationsrechner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: Arial, sans-serif; }
@@ -16,9 +16,10 @@
       <h1 class="text-2xl font-bold text-pink-700 mb-1">Pferdeliebehealthy.de</h1>
       <p class="text-pink-600">Mit natürlicher Fütterung zu einem gesunden Pferd</p>
     </div>
+    
     <!-- Titel -->
     <div class="bg-pink-50 p-3 text-center border-b border-pink-200">
-      <h2 class="text-xl font-bold text-stone-700">Rationsrechner Tool für Pferde (Erweiterte Version)</h2>
+      <h2 class="text-xl font-bold text-stone-700">Rationsrechner Tool für Pferde</h2>
     </div>
     
     <div class="p-4">
@@ -68,23 +69,23 @@
               <option value="aktivstall">Aktivstall (+15%)</option>
             </select>
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center space-x-2">
             <label class="flex items-center text-stone-700 cursor-pointer">
               <input type="checkbox" id="isSenior" class="mr-2 h-4 w-4 border-pink-300 text-pink-500">
               Senior-Pferd (+15% Energiebedarf)
             </label>
-          </div>
-          <!-- Berechnen-Button für Senior-Pferd -->
-          <div class="md:col-span-2">
-            <button id="berechnenButton" class="w-full p-2 bg-pink-400 hover:bg-pink-500 text-white rounded">Berechnen</button>
+            <!-- Button nur bei Senior sichtbar -->
+            <button id="berechnenSenior" class="hidden p-2 bg-pink-300 hover:bg-pink-400 text-stone-800 rounded">
+              Berechnen
+            </button>
           </div>
         </div>
       </div>
       
       <!-- Futtermittel -->
-      <h3 class="font-bold mb-3 text-pink-700">Futtermittel (Werte in g/kg bzw. MJ/kg)</h3>
+      <h3 class="font-bold mb-3 text-pink-700">Futtermittel:</h3>
       <div id="futtermittelContainer">
-        <!-- Futtermittel werden hier dynamisch hinzugefügt -->
+        <!-- Dynamisch hinzugefügte Einträge -->
       </div>
       <button id="addFuttermittel" class="mt-3 w-full p-2 bg-pink-300 hover:bg-pink-400 text-stone-800 rounded">
         + Futtermittel hinzufügen
@@ -92,98 +93,105 @@
       
       <!-- Bedarfsanalyse -->
       <div class="mt-6 p-4 bg-stone-100 rounded border border-pink-200">
-        <h3 class="font-bold mb-3 text-pink-700">Bedarfsanalyse (g/kg bzw. MJ/kg)</h3>
+        <h3 class="font-bold mb-3 text-pink-700">Bedarfsanalyse:</h3>
         <div id="gewichtWarnung" class="mb-4 p-2 bg-stone-200 border border-stone-300 rounded flex items-center text-stone-800">
           <span class="mr-2">⚠️</span>
           Bitte geben Sie das Gewicht des Pferdes ein, um die Bedarfsanalyse zu sehen.
         </div>
-        
         <div id="ergebnisBereich" class="hidden">
           <div class="grid grid-cols-1 gap-3">
-            <!-- Jeweils eine Zeile pro Nährstoff mit Ampel, Gesamtwert und Bedarf -->
+            <!-- Für jeden Nährstoff: Anzeige von Bedarf vs. Gesamtangebot -->
             <div class="flex items-center">
-              <div id="tsAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Trockensubstanz: <span id="gesamtTS">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfTS">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-trockensubstanz" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Trockensubstanz: Bedarf: <span id="bedarfTrockensubstanz">0.00</span> kg, 
+                Gesamt: <span id="gesamtTrockensubstanz">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="roproteinAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Rohprotein: <span id="gesamtRoprotein">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfRoprotein">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-rohprotein" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Rohprotein: Bedarf: <span id="bedarfRohprotein">0.00</span> kg, 
+                Gesamt: <span id="gesamtRohprotein">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="energieAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Energie: <span id="gesamtEnergie">0.00</span> MJ/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfEnergie">0.00</span> MJ/kg</p>
-              </div>
+              <div id="ampel-energie" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Energie: Bedarf: <span id="bedarfEnergie">0.00</span> MJ, 
+                Gesamt: <span id="gesamtEnergie">0.00</span> MJ
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="zuckerAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Zucker: <span id="gesamtZucker">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Max. empfohlen: <span id="bedarfZucker">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-zucker" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Zucker: Bedarf: <span id="bedarfZucker">0.00</span> kg, 
+                Gesamt: <span id="gesamtZucker">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="rohfaserAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Rohfaser: <span id="gesamtRohfaser">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfRohfaser">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-rohfaser" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Rohfaser: Bedarf: <span id="bedarfRohfaser">0.00</span> kg, 
+                Gesamt: <span id="gesamtRohfaser">0.00</span> kg
+              </p>
+            </div>
+            <!-- Weitere Nährstoffe (Calcium, Phosphor, Magnesium, Zink, Natrium, Lysin, Methionin, Threonin) analog -->
+            <div class="flex items-center">
+              <div id="ampel-calcium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Calcium: Bedarf: <span id="bedarfCalcium">0.00</span> kg, 
+                Gesamt: <span id="gesamtCalcium">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="calciumPhosphorAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Calcium &amp; Phosphor: <span id="gesamtCalciumPhosphor">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfCalciumPhosphor">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-phosphor" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Phosphor: Bedarf: <span id="bedarfPhosphor">0.00</span> kg, 
+                Gesamt: <span id="gesamtPhosphor">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="magnesiumAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Magnesium: <span id="gesamtMagnesium">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfMagnesium">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-magnesium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Magnesium: Bedarf: <span id="bedarfMagnesium">0.00</span> kg, 
+                Gesamt: <span id="gesamtMagnesium">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="zinkAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Zink: <span id="gesamtZink">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfZink">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-zink" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Zink: Bedarf: <span id="bedarfZink">0.00</span> kg, 
+                Gesamt: <span id="gesamtZink">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="natriumAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Natrium: <span id="gesamtNatrium">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfNatrium">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-natrium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Natrium: Bedarf: <span id="bedarfNatrium">0.00</span> kg, 
+                Gesamt: <span id="gesamtNatrium">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="lysinAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Lysin: <span id="gesamtLysin">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfLysin">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-lysin" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Lysin: Bedarf: <span id="bedarfLysin">0.00</span> kg, 
+                Gesamt: <span id="gesamtLysin">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="methioninAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Methionin: <span id="gesamtMethionin">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfMethionin">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-methionin" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Methionin: Bedarf: <span id="bedarfMethionin">0.00</span> kg, 
+                Gesamt: <span id="gesamtMethionin">0.00</span> kg
+              </p>
             </div>
             <div class="flex items-center">
-              <div id="threoninAmpel" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <div>
-                <p class="text-stone-700">Threonin: <span id="gesamtThreonin">0.00</span> g/kg</p>
-                <p class="text-xs text-pink-600">Bedarf: <span id="bedarfThreonin">0.00</span> g/kg</p>
-              </div>
+              <div id="ampel-threonin" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
+              <p class="text-stone-700">
+                Threonin: Bedarf: <span id="bedarfThreonin">0.00</span> kg, 
+                Gesamt: <span id="gesamtThreonin">0.00</span> kg
+              </p>
             </div>
           </div>
           
@@ -207,57 +215,139 @@
       <!-- Zusammenfassung -->
       <div class="mt-4 p-4 bg-white rounded border border-pink-200">
         <h3 class="font-bold mb-3 text-pink-700">Weitere Informationen:</h3>
-        <p class="text-sm text-stone-700 mb-2">• Gesamtfuttermenge: <span id="gesamtFuttermenge">0.00</span> g/kg</p>
+        <p class="text-sm text-stone-700 mb-2">
+          • Gesamtfuttermenge: <span id="gesamtFuttermenge">0.00</span> kg
+        </p>
+        <p class="text-sm text-stone-700 mb-2">
+          • Täglicher Heubedarf: <span id="bedarfHeu">0.00</span> kg
+        </p>
         <div id="anpassungenBereich" class="mt-2 p-3 rounded bg-stone-100 hidden">
           <p class="text-sm font-semibold text-pink-700 mb-1">Aktive Anpassungen:</p>
-          <ul id="anpassungenListe" class="text-xs text-stone-600 pl-4 list-disc">
-            <!-- Dynamische Anpassungen -->
-          </ul>
+          <ul id="anpassungenListe" class="text-xs text-stone-600 pl-4 list-disc"></ul>
         </div>
-        <p class="text-sm text-stone-700 mt-2">• Die Ampelfarben zeigen, ob die Nährstoffzufuhr im optimalen (grün), grenzwertigen (gelb) oder kritischen (rot) Bereich liegt.</p>
+        <p class="text-sm text-stone-700 mt-2">
+          • Die Ampelfarben zeigen, ob die Nährstoffzufuhr im optimalen (grün), grenzwertigen (gelb) oder kritischen (rot) Bereich liegt.
+        </p>
       </div>
     </div>
   </div>
   
   <script>
-    // Globale Variablen
+    // Vordefinierte Werte für übliche Futtermittel (Presets)
+    const feedPresets = {
+      "heu": {
+        name: "Heu",
+        trockensubstanz: 850,
+        rohprotein: 90,
+        energie: 2.5,
+        zucker: 50,
+        rohfaser: 250,
+        calcium: 20,
+        phosphor: 10,
+        magnesium: 5,
+        zink: 2,
+        natrium: 3,
+        lysin: 4,
+        methionin: 1.5,
+        threonin: 2.5
+      },
+      "hafer": {
+        name: "Hafer",
+        trockensubstanz: 880,
+        rohprotein: 120,
+        energie: 10,
+        zucker: 30,
+        rohfaser: 150,
+        calcium: 10,
+        phosphor: 3,
+        magnesium: 2,
+        zink: 2,
+        natrium: 1,
+        lysin: 20,
+        methionin: 6,
+        threonin: 9
+      },
+      "gerste": {
+        name: "Gerste",
+        trockensubstanz: 900,
+        rohprotein: 110,
+        energie: 9,
+        zucker: 25,
+        rohfaser: 140,
+        calcium: 12,
+        phosphor: 4,
+        magnesium: 2.5,
+        zink: 1.5,
+        natrium: 0.8,
+        lysin: 18,
+        methionin: 5,
+        threonin: 8
+      }
+    };
+    
     let futtermittelListe = [];
     let naechsteId = 1;
-    let bedarf = {}; // erweitert um alle Nährstoffe
+    // Bedarfobjekt: errechneter Nährstoffbedarf basierend auf den Pferdedaten
+    let bedarf = {
+      heu: 0,
+      trockensubstanz: 0,
+      rohprotein: 0,
+      energie: 0,
+      zucker: 0,
+      rohfaser: 0,
+      calcium: 0,
+      phosphor: 0,
+      magnesium: 0,
+      zink: 0,
+      natrium: 0,
+      lysin: 0,
+      methionin: 0,
+      threonin: 0
+    };
     let gewichtsModus = 'halten';
     
-    // Event Listener
     document.addEventListener('DOMContentLoaded', function() {
+      // Einen ersten Futtermittel-Eintrag hinzufügen (evtl. als Ausgangspunkt)
       addFuttermittel();
-      updateBedarfsberechnung();
+      const inputs = ['gewicht', 'zielgewicht', 'pferdetyp', 'jahreszeit', 'aktivitaet', 'haltung'];
+      inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+          if (!document.getElementById('isSenior').checked) updateBedarfsberechnung();
+        });
+        document.getElementById(id).addEventListener('change', () => {
+          if (!document.getElementById('isSenior').checked) updateBedarfsberechnung();
+        });
+      });
       
-      document.getElementById('gewicht').addEventListener('input', updateBedarfsberechnung);
-      document.getElementById('zielgewicht').addEventListener('input', updateBedarfsberechnung);
-      document.getElementById('pferdetyp').addEventListener('change', updateBedarfsberechnung);
-      document.getElementById('jahreszeit').addEventListener('change', updateBedarfsberechnung);
-      document.getElementById('aktivitaet').addEventListener('change', updateBedarfsberechnung);
-      document.getElementById('haltung').addEventListener('change', updateBedarfsberechnung);
-      document.getElementById('isSenior').addEventListener('change', updateBedarfsberechnung);
-      document.getElementById('berechnenButton').addEventListener('click', updateBedarfsberechnung);
+      document.getElementById('isSenior').addEventListener('change', function() {
+        if(this.checked) {
+          document.getElementById('berechnenSenior').classList.remove('hidden');
+        } else {
+          document.getElementById('berechnenSenior').classList.add('hidden');
+          updateBedarfsberechnung();
+        }
+      });
       
+      document.getElementById('berechnenSenior').addEventListener('click', updateBedarfsberechnung);
       document.getElementById('addFuttermittel').addEventListener('click', addFuttermittel);
     });
     
-    // Futtermittel hinzufügen
+    // Fügt einen neuen Futtermittel-Eintrag hinzu
     function addFuttermittel() {
       const container = document.getElementById('futtermittelContainer');
       const id = naechsteId++;
-      
+      // Standardwerte: Werte werden in g/kg (bzw. MJ/kg) eingegeben
       const futtermittel = {
         id,
         name: '',
         menge: 0,
-        ts: 0,
-        roprotein: 0,
+        trockensubstanz: 0,
+        rohprotein: 0,
         energie: 0,
         zucker: 0,
         rohfaser: 0,
-        calciumPhosphor: 0,
+        calcium: 0,
+        phosphor: 0,
         magnesium: 0,
         zink: 0,
         natrium: 0,
@@ -265,7 +355,6 @@
         methionin: 0,
         threonin: 0
       };
-      
       futtermittelListe.push(futtermittel);
       
       const div = document.createElement('div');
@@ -273,186 +362,160 @@
       div.id = `futtermittel-${id}`;
       div.innerHTML = `
         <div class="flex justify-between items-center p-3 bg-stone-50">
-          <div class="flex-grow mr-2">
-            <input 
-              type="text" 
-              id="name-${id}"
-              placeholder="Futtermittel eingeben" 
-              class="w-full p-2 border border-pink-200 rounded"
-            />
+          <div class="w-1/3 mr-2">
+            <label class="block text-sm text-stone-700 mb-1">Futtermitteltyp</label>
+            <select id="preset-${id}" class="w-full p-2 border border-pink-200 rounded">
+              <option value="custom" selected>-- Custom --</option>
+              <option value="heu">Heu</option>
+              <option value="hafer">Hafer</option>
+              <option value="gerste">Gerste</option>
+            </select>
           </div>
-          <div class="flex items-center">
-            <input 
-              type="number" 
-              id="menge-${id}"
-              placeholder="Menge (g/kg)" 
-              class="w-24 mr-2 p-2 border border-pink-200 rounded"
-            />
-            <button 
-              onclick="toggleFuttermittel(${id})"
-              class="p-1 mr-1 rounded hover:bg-pink-100"
-            >
-              ▼
-            </button>
-            <button 
-              onclick="removeFuttermittel(${id})" 
-              class="p-1 rounded hover:bg-pink-100 text-pink-600"
-            >
-              ✕
-            </button>
+          <div class="flex-grow">
+            <label class="block text-sm text-stone-700 mb-1">Name (optional)</label>
+            <input type="text" id="name-${id}" placeholder="Futtermittel eingeben" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div class="w-20 ml-2">
+            <label class="block text-sm text-stone-700 mb-1">Menge (kg)</label>
+            <input type="number" id="menge-${id}" placeholder="kg" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div class="flex flex-col">
+            <button onclick="toggleFuttermittel(${id})" class="p-1 mb-1 rounded hover:bg-pink-100">▼</button>
+            <button onclick="removeFuttermittel(${id})" class="p-1 rounded hover:bg-pink-100 text-pink-600">✕</button>
           </div>
         </div>
-        <div id="details-${id}" class="p-3 bg-white hidden">
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Trockensubstanz (g/kg):</label>
-              <input 
-                type="number" 
-                id="ts-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Rohprotein (g/kg):</label>
-              <input 
-                type="number" 
-                id="roprotein-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Energie (MJ/kg):</label>
-              <input 
-                type="number" 
-                id="energie-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Zucker (g/kg):</label>
-              <input 
-                type="number" 
-                id="zucker-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Rohfaser (g/kg):</label>
-              <input 
-                type="number" 
-                id="rohfaser-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Calcium &amp; Phosphor (g/kg):</label>
-              <input 
-                type="number" 
-                id="calciumPhosphor-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Magnesium (g/kg):</label>
-              <input 
-                type="number" 
-                id="magnesium-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Zink (g/kg):</label>
-              <input 
-                type="number" 
-                id="zink-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Natrium (g/kg):</label>
-              <input 
-                type="number" 
-                id="natrium-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Lysin (g/kg):</label>
-              <input 
-                type="number" 
-                id="lysin-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Methionin (g/kg):</label>
-              <input 
-                type="number" 
-                id="methionin-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-stone-700 mb-1">Threonin (g/kg):</label>
-              <input 
-                type="number" 
-                id="threonin-${id}"
-                class="w-full p-2 border border-pink-200 rounded"
-              />
-            </div>
+        <div id="details-${id}" class="p-3 bg-white hidden grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Trockensubstanz (g/kg):</label>
+            <input type="number" id="trockensubstanz-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Rohprotein (g/kg):</label>
+            <input type="number" id="rohprotein-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Energie (MJ/kg):</label>
+            <input type="number" id="energie-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Zucker (g/kg):</label>
+            <input type="number" id="zucker-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Rohfaser (g/kg):</label>
+            <input type="number" id="rohfaser-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Calcium (g/kg):</label>
+            <input type="number" id="calcium-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Phosphor (g/kg):</label>
+            <input type="number" id="phosphor-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Magnesium (g/kg):</label>
+            <input type="number" id="magnesium-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Zink (g/kg):</label>
+            <input type="number" id="zink-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Natrium (g/kg):</label>
+            <input type="number" id="natrium-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Lysin (g/kg):</label>
+            <input type="number" id="lysin-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Methionin (g/kg):</label>
+            <input type="number" id="methionin-${id}" class="w-full p-2 border border-pink-200 rounded">
+          </div>
+          <div>
+            <label class="block text-sm text-stone-700 mb-1">Threonin (g/kg):</label>
+            <input type="number" id="threonin-${id}" class="w-full p-2 border border-pink-200 rounded">
           </div>
         </div>
       `;
-      
       container.appendChild(div);
       
-      // Event Listener für alle Eingabefelder des Futtermittels
-      document.getElementById(`name-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'name', e.target.value));
-      document.getElementById(`menge-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'menge', parseFloat(e.target.value) || 0));
-      document.getElementById(`ts-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'ts', parseFloat(e.target.value) || 0));
-      document.getElementById(`roprotein-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'roprotein', parseFloat(e.target.value) || 0));
-      document.getElementById(`energie-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'energie', parseFloat(e.target.value) || 0));
-      document.getElementById(`zucker-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'zucker', parseFloat(e.target.value) || 0));
-      document.getElementById(`rohfaser-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'rohfaser', parseFloat(e.target.value) || 0));
-      document.getElementById(`calciumPhosphor-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'calciumPhosphor', parseFloat(e.target.value) || 0));
-      document.getElementById(`magnesium-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'magnesium', parseFloat(e.target.value) || 0));
-      document.getElementById(`zink-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'zink', parseFloat(e.target.value) || 0));
-      document.getElementById(`natrium-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'natrium', parseFloat(e.target.value) || 0));
-      document.getElementById(`lysin-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'lysin', parseFloat(e.target.value) || 0));
-      document.getElementById(`methionin-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'methionin', parseFloat(e.target.value) || 0));
-      document.getElementById(`threonin-${id}`).addEventListener('input', (e) => updateFuttermittel(id, 'threonin', parseFloat(e.target.value) || 0));
+      // Preset-Dropdown: Bei Auswahl werden die vordefinierten Werte geladen.
+      document.getElementById(`preset-${id}`).addEventListener('change', (e) => {
+        let preset = e.target.value;
+        if(preset !== "custom" && feedPresets[preset]) {
+          const presetData = feedPresets[preset];
+          document.getElementById(`trockensubstanz-${id}`).value = presetData.trockensubstanz;
+          document.getElementById(`rohprotein-${id}`).value = presetData.rohprotein;
+          document.getElementById(`energie-${id}`).value = presetData.energie;
+          document.getElementById(`zucker-${id}`).value = presetData.zucker;
+          document.getElementById(`rohfaser-${id}`).value = presetData.rohfaser;
+          document.getElementById(`calcium-${id}`).value = presetData.calcium;
+          document.getElementById(`phosphor-${id}`).value = presetData.phosphor;
+          document.getElementById(`magnesium-${id}`).value = presetData.magnesium;
+          document.getElementById(`zink-${id}`).value = presetData.zink;
+          document.getElementById(`natrium-${id}`).value = presetData.natrium;
+          document.getElementById(`lysin-${id}`).value = presetData.lysin;
+          document.getElementById(`methionin-${id}`).value = presetData.methionin;
+          document.getElementById(`threonin-${id}`).value = presetData.threonin;
+          // Falls das Namensfeld leer ist, automatisch füllen
+          let nameField = document.getElementById(`name-${id}`);
+          if(!nameField.value.trim()){
+            nameField.value = presetData.name;
+            updateFuttermittel(id, "name", presetData.name);
+          }
+          // Aktualisiere das interne Objekt
+          updateFuttermittel(id, "trockensubstanz", presetData.trockensubstanz);
+          updateFuttermittel(id, "rohprotein", presetData.rohprotein);
+          updateFuttermittel(id, "energie", presetData.energie);
+          updateFuttermittel(id, "zucker", presetData.zucker);
+          updateFuttermittel(id, "rohfaser", presetData.rohfaser);
+          updateFuttermittel(id, "calcium", presetData.calcium);
+          updateFuttermittel(id, "phosphor", presetData.phosphor);
+          updateFuttermittel(id, "magnesium", presetData.magnesium);
+          updateFuttermittel(id, "zink", presetData.zink);
+          updateFuttermittel(id, "natrium", presetData.natrium);
+          updateFuttermittel(id, "lysin", presetData.lysin);
+          updateFuttermittel(id, "methionin", presetData.methionin);
+          updateFuttermittel(id, "threonin", presetData.threonin);
+        }
+      });
+      
+      // Für alle Eingabefelder: Bei Änderung aktualisieren wir den internen Datensatz.
+      const fields = ['name','menge','trockensubstanz','rohprotein','energie','zucker','rohfaser','calcium','phosphor','magnesium','zink','natrium','lysin','methionin','threonin'];
+      fields.forEach(field => {
+        document.getElementById(`${field}-${id}`).addEventListener('input', (e) => {
+          let value = (field === 'name') ? e.target.value : parseFloat(e.target.value);
+          if(isNaN(value)) { value = 0; }
+          updateFuttermittel(id, field, value);
+        });
+      });
     }
     
-    // Aktualisiert einen einzelnen Wert eines Futtermittels
     function updateFuttermittel(id, feld, wert) {
       const futtermittel = futtermittelListe.find(item => item.id === id);
-      if (futtermittel) {
+      if(futtermittel) {
         futtermittel[feld] = wert;
-        updateBedarfsberechnung();
+        if(!document.getElementById('isSenior').checked) updateBedarfsberechnung();
       }
     }
     
-    // Futtermittel entfernen
     function removeFuttermittel(id) {
       futtermittelListe = futtermittelListe.filter(item => item.id !== id);
       const element = document.getElementById(`futtermittel-${id}`);
-      if (element) { element.remove(); }
+      if(element) { element.remove(); }
       updateBedarfsberechnung();
     }
     
-    // Details anzeigen/verbergen
     function toggleFuttermittel(id) {
       const details = document.getElementById(`details-${id}`);
-      if (details) {
+      if(details) {
         details.classList.toggle('hidden');
-        const button = details.previousElementSibling.querySelector('button');
-        if (button) {
-          button.textContent = details.classList.contains('hidden') ? '▼' : '▲';
-        }
       }
     }
     
-    // Bedarfsberechnung (inkl. Umrechnung in g/kg) und Ableitung der Nährstoffbedarfe
+    // Berechnet den Bedarf basierend auf den Pferdedaten und zeigt diesen an.
     function updateBedarfsberechnung() {
       const gewicht = parseFloat(document.getElementById('gewicht').value) || 0;
       const zielgewicht = parseFloat(document.getElementById('zielgewicht').value) || 0;
@@ -464,8 +527,7 @@
       
       const gewichtWarnung = document.getElementById('gewichtWarnung');
       const ergebnisBereich = document.getElementById('ergebnisBereich');
-      
-      if (gewicht <= 0) {
+      if(gewicht <= 0) {
         gewichtWarnung.classList.remove('hidden');
         ergebnisBereich.classList.add('hidden');
         return;
@@ -474,11 +536,10 @@
         ergebnisBereich.classList.remove('hidden');
       }
       
-      // Gewichtsmodus bestimmen
-      if (zielgewicht > 0) {
-        if (zielgewicht > gewicht + 5) {
+      if(zielgewicht > 0) {
+        if(zielgewicht > gewicht + 5) {
           gewichtsModus = 'zunehmen';
-        } else if (zielgewicht < gewicht - 5) {
+        } else if(zielgewicht < gewicht - 5) {
           gewichtsModus = 'abnehmen';
         } else {
           gewichtsModus = 'halten';
@@ -487,8 +548,8 @@
         gewichtsModus = 'halten';
       }
       
-      // Heubedarf berechnen (1,5kg/100kg, hier in kg) und anschließende Anpassungen
-      let heuBedarf = gewicht * 0.015; // in kg
+      // Automatische Berechnung des Heubedarfs (als reine Bedarfsermittlung)
+      let heuBedarf = gewicht * 0.015;
       let typFaktor = 1.0;
       switch(pferdetyp) {
         case 'shetlandpony': typFaktor = 0.9; break;
@@ -503,85 +564,71 @@
         case 'leicht': heuBedarf *= 1.1; break;
         case 'mittel': heuBedarf *= 1.2; break;
         case 'schwer': heuBedarf *= 1.3; break;
-        default: break;
       }
-      if (haltung === 'offenstall') {
+      if(haltung === 'offenstall') {
         heuBedarf *= 1.1;
-      } else if (haltung === 'aktivstall') {
+      } else if(haltung === 'aktivstall') {
         heuBedarf *= 1.15;
       }
-      if (jahreszeit === 'winter') {
+      if(jahreszeit === 'winter') {
         heuBedarf *= 1.1;
       }
-      if (isSenior) {
+      if(isSenior) {
         heuBedarf *= 1.15;
       }
-      if (gewichtsModus === 'zunehmen') {
+      if(gewichtsModus === 'zunehmen') {
         heuBedarf *= 1.1;
-      } else if (gewichtsModus === 'abnehmen') {
+      } else if(gewichtsModus === 'abnehmen') {
         heuBedarf *= 0.85;
       }
       
-      // Umrechnung in g/kg Körpergewicht
-      const heuBedarf_gPerKg = (heuBedarf * 1000) / gewicht;
+      // Errechnung der Nährstoffbedarfe basierend auf dem berechneten Heubedarf
+      bedarf.heu = heuBedarf;
+      bedarf.trockensubstanz = heuBedarf * 0.9;
+      bedarf.rohprotein = bedarf.trockensubstanz * 0.09;
+      bedarf.energie = bedarf.trockensubstanz * 2.5;
+      bedarf.zucker = bedarf.trockensubstanz * 0.1;
+      bedarf.rohfaser = bedarf.trockensubstanz * 0.25;
+      bedarf.calcium = bedarf.trockensubstanz * 0.02;
+      bedarf.phosphor = bedarf.trockensubstanz * 0.01;
+      bedarf.magnesium = bedarf.trockensubstanz * 0.005;
+      bedarf.zink = bedarf.trockensubstanz * 0.002;
+      bedarf.natrium = bedarf.trockensubstanz * 0.003;
+      bedarf.lysin = bedarf.trockensubstanz * 0.004;
+      bedarf.methionin = bedarf.trockensubstanz * 0.0015;
+      bedarf.threonin = bedarf.trockensubstanz * 0.0025;
       
-      // Platzhalter-Formeln zur Berechnung der Nährstoffbedarfe
-      const tsBedarf = heuBedarf_gPerKg * 0.9;
-      const roproteinBedarf = tsBedarf * 0.09;
-      const energieBedarf = tsBedarf * 0.5;
-      const zuckerBedarf = tsBedarf * 0.1;
-      const rohfaserBedarf = tsBedarf * 0.2;
-      const calciumPhosphorBedarf = tsBedarf * 0.03;
-      const magnesiumBedarf = tsBedarf * 0.01;
-      const zinkBedarf = tsBedarf * 0.005;
-      const natriumBedarf = tsBedarf * 0.004;
-      const lysinBedarf = tsBedarf * 0.006;
-      const methioninBedarf = tsBedarf * 0.003;
-      const threoninBedarf = tsBedarf * 0.002;
+      // Anzeige des berechneten Bedarfs
+      document.getElementById('bedarfHeu').textContent = heuBedarf.toFixed(2);
+      document.getElementById('bedarfTrockensubstanz').textContent = bedarf.trockensubstanz.toFixed(2);
+      document.getElementById('bedarfRohprotein').textContent = bedarf.rohprotein.toFixed(2);
+      document.getElementById('bedarfEnergie').textContent = bedarf.energie.toFixed(2);
+      document.getElementById('bedarfZucker').textContent = bedarf.zucker.toFixed(2);
+      document.getElementById('bedarfRohfaser').textContent = bedarf.rohfaser.toFixed(2);
+      document.getElementById('bedarfCalcium').textContent = bedarf.calcium.toFixed(2);
+      document.getElementById('bedarfPhosphor').textContent = bedarf.phosphor.toFixed(2);
+      document.getElementById('bedarfMagnesium').textContent = bedarf.magnesium.toFixed(2);
+      document.getElementById('bedarfZink').textContent = bedarf.zink.toFixed(2);
+      document.getElementById('bedarfNatrium').textContent = bedarf.natrium.toFixed(2);
+      document.getElementById('bedarfLysin').textContent = bedarf.lysin.toFixed(2);
+      document.getElementById('bedarfMethionin').textContent = bedarf.methionin.toFixed(2);
+      document.getElementById('bedarfThreonin').textContent = bedarf.threonin.toFixed(2);
       
-      bedarf = {
-        heu: heuBedarf_gPerKg,
-        ts: tsBedarf,
-        roprotein: roproteinBedarf,
-        energie: energieBedarf,
-        zucker: zuckerBedarf,
-        rohfaser: rohfaserBedarf,
-        calciumPhosphor: calciumPhosphorBedarf,
-        magnesium: magnesiumBedarf,
-        zink: zinkBedarf,
-        natrium: natriumBedarf,
-        lysin: lysinBedarf,
-        methionin: methioninBedarf,
-        threonin: threoninBedarf
-      };
-      
-      // Aktualisiere die Bedarf-Anzeige
-      document.getElementById('bedarfTS').textContent = tsBedarf.toFixed(2);
-      document.getElementById('bedarfRoprotein').textContent = roproteinBedarf.toFixed(2);
-      document.getElementById('bedarfEnergie').textContent = energieBedarf.toFixed(2);
-      document.getElementById('bedarfZucker').textContent = zuckerBedarf.toFixed(2);
-      document.getElementById('bedarfRohfaser').textContent = rohfaserBedarf.toFixed(2);
-      document.getElementById('bedarfCalciumPhosphor').textContent = calciumPhosphorBedarf.toFixed(2);
-      document.getElementById('bedarfMagnesium').textContent = magnesiumBedarf.toFixed(2);
-      document.getElementById('bedarfZink').textContent = zinkBedarf.toFixed(2);
-      document.getElementById('bedarfNatrium').textContent = natriumBedarf.toFixed(2);
-      document.getElementById('bedarfLysin').textContent = lysinBedarf.toFixed(2);
-      document.getElementById('bedarfMethionin').textContent = methioninBedarf.toFixed(2);
-      document.getElementById('bedarfThreonin').textContent = threoninBedarf.toFixed(2);
-      
+      // Gesamtsummen der in der Futtermittelliste eingegebenen Werte berechnen
       updateGesamtwerte();
       updateAnpassungen();
     }
     
-    // Berechnet die aggregierten Nährstoffwerte aus den Futtermitteln
+    // WICHTIG: Hier beginnen wir nun bei 0 – die "Gesamt"-Werte stammen ausschließlich aus den Futtermittel-Eingaben!
     function updateGesamtwerte() {
       let gesamtMenge = 0;
-      let gesamtTS = 0;
-      let gesamtRoprotein = 0;
+      let gesamtTrockensubstanz = 0;
+      let gesamtRohprotein = 0;
       let gesamtEnergie = 0;
       let gesamtZucker = 0;
       let gesamtRohfaser = 0;
-      let gesamtCalciumPhosphor = 0;
+      let gesamtCalcium = 0;
+      let gesamtPhosphor = 0;
       let gesamtMagnesium = 0;
       let gesamtZink = 0;
       let gesamtNatrium = 0;
@@ -590,29 +637,30 @@
       let gesamtThreonin = 0;
       
       futtermittelListe.forEach(item => {
-        // Die Futtermenge (in g/kg) wird als Anteil (kg Futter pro kg Körpergewicht) = menge/1000 betrachtet.
         gesamtMenge += item.menge;
-        gesamtTS += (item.menge / 1000) * item.ts;
-        gesamtRoprotein += (item.menge / 1000) * item.roprotein;
-        gesamtEnergie += (item.menge / 1000) * item.energie;
-        gesamtZucker += (item.menge / 1000) * item.zucker;
-        gesamtRohfaser += (item.menge / 1000) * item.rohfaser;
-        gesamtCalciumPhosphor += (item.menge / 1000) * item.calciumPhosphor;
-        gesamtMagnesium += (item.menge / 1000) * item.magnesium;
-        gesamtZink += (item.menge / 1000) * item.zink;
-        gesamtNatrium += (item.menge / 1000) * item.natrium;
-        gesamtLysin += (item.menge / 1000) * item.lysin;
-        gesamtMethionin += (item.menge / 1000) * item.methionin;
-        gesamtThreonin += (item.menge / 1000) * item.threonin;
+        gesamtTrockensubstanz += item.menge * (item.trockensubstanz / 1000);
+        gesamtRohprotein += item.menge * (item.rohprotein / 1000);
+        gesamtEnergie += item.menge * item.energie;
+        gesamtZucker += item.menge * (item.zucker / 1000);
+        gesamtRohfaser += item.menge * (item.rohfaser / 1000);
+        gesamtCalcium += item.menge * (item.calcium / 1000);
+        gesamtPhosphor += item.menge * (item.phosphor / 1000);
+        gesamtMagnesium += item.menge * (item.magnesium / 1000);
+        gesamtZink += item.menge * (item.zink / 1000);
+        gesamtNatrium += item.menge * (item.natrium / 1000);
+        gesamtLysin += item.menge * (item.lysin / 1000);
+        gesamtMethionin += item.menge * (item.methionin / 1000);
+        gesamtThreonin += item.menge * (item.threonin / 1000);
       });
       
       document.getElementById('gesamtFuttermenge').textContent = gesamtMenge.toFixed(2);
-      document.getElementById('gesamtTS').textContent = gesamtTS.toFixed(2);
-      document.getElementById('gesamtRoprotein').textContent = gesamtRoprotein.toFixed(2);
+      document.getElementById('gesamtTrockensubstanz').textContent = gesamtTrockensubstanz.toFixed(2);
+      document.getElementById('gesamtRohprotein').textContent = gesamtRohprotein.toFixed(2);
       document.getElementById('gesamtEnergie').textContent = gesamtEnergie.toFixed(2);
       document.getElementById('gesamtZucker').textContent = gesamtZucker.toFixed(2);
       document.getElementById('gesamtRohfaser').textContent = gesamtRohfaser.toFixed(2);
-      document.getElementById('gesamtCalciumPhosphor').textContent = gesamtCalciumPhosphor.toFixed(2);
+      document.getElementById('gesamtCalcium').textContent = gesamtCalcium.toFixed(2);
+      document.getElementById('gesamtPhosphor').textContent = gesamtPhosphor.toFixed(2);
       document.getElementById('gesamtMagnesium').textContent = gesamtMagnesium.toFixed(2);
       document.getElementById('gesamtZink').textContent = gesamtZink.toFixed(2);
       document.getElementById('gesamtNatrium').textContent = gesamtNatrium.toFixed(2);
@@ -620,129 +668,98 @@
       document.getElementById('gesamtMethionin').textContent = gesamtMethionin.toFixed(2);
       document.getElementById('gesamtThreonin').textContent = gesamtThreonin.toFixed(2);
       
-      updateAmpelfarben({
-        ts: gesamtTS,
-        roprotein: gesamtRoprotein,
-        energie: gesamtEnergie,
-        zucker: gesamtZucker,
-        rohfaser: gesamtRohfaser,
-        calciumPhosphor: gesamtCalciumPhosphor,
-        magnesium: gesamtMagnesium,
-        zink: gesamtZink,
-        natrium: gesamtNatrium,
-        lysin: gesamtLysin,
-        methionin: gesamtMethionin,
-        threonin: gesamtThreonin
-      });
+      updateAmpelfarbe('ampel-trockensubstanz', gesamtTrockensubstanz, bedarf.trockensubstanz);
+      updateAmpelfarbe('ampel-rohprotein', gesamtRohprotein, bedarf.rohprotein);
+      updateAmpelfarbe('ampel-energie', gesamtEnergie, bedarf.energie);
+      updateAmpelfarbe('ampel-zucker', gesamtZucker, bedarf.zucker);
+      updateAmpelfarbe('ampel-rohfaser', gesamtRohfaser, bedarf.rohfaser);
+      updateAmpelfarbe('ampel-calcium', gesamtCalcium, bedarf.calcium);
+      updateAmpelfarbe('ampel-phosphor', gesamtPhosphor, bedarf.phosphor);
+      updateAmpelfarbe('ampel-magnesium', gesamtMagnesium, bedarf.magnesium);
+      updateAmpelfarbe('ampel-zink', gesamtZink, bedarf.zink);
+      updateAmpelfarbe('ampel-natrium', gesamtNatrium, bedarf.natrium);
+      updateAmpelfarbe('ampel-lysin', gesamtLysin, bedarf.lysin);
+      updateAmpelfarbe('ampel-methionin', gesamtMethionin, bedarf.methionin);
+      updateAmpelfarbe('ampel-threonin', gesamtThreonin, bedarf.threonin);
     }
     
-    // Aktualisiert die Ampelsymbole für jeden Nährstoff
-    function updateAmpelfarben(gesamt) {
-      function setAmpel(nutrient, elementId) {
-        const req = bedarf[nutrient];
-        const total = gesamt[nutrient];
-        const el = document.getElementById(elementId);
-        if (req > 0) {
-          const percent = (total / req) * 100;
-          if (percent >= 80 && percent <= 120) {
-            el.className = 'w-4 h-4 rounded-full mr-2 bg-green-500';
-          } else if ((percent >= 60 && percent < 80) || (percent > 120 && percent <= 140)) {
-            el.className = 'w-4 h-4 rounded-full mr-2 bg-yellow-500';
-          } else {
-            el.className = 'w-4 h-4 rounded-full mr-2 bg-red-500';
-          }
+    function updateAmpelfarbe(elementId, supply, requirement) {
+      const el = document.getElementById(elementId);
+      if(requirement > 0) {
+        const percent = (supply / requirement) * 100;
+        if(percent >= 90 && percent <= 110) {
+          el.className = 'w-4 h-4 rounded-full mr-2 bg-green-500';
+        } else if((percent >= 70 && percent < 90) || (percent > 110 && percent <= 130)) {
+          el.className = 'w-4 h-4 rounded-full mr-2 bg-yellow-500';
         } else {
-          el.className = 'w-4 h-4 rounded-full mr-2 bg-gray-300';
+          el.className = 'w-4 h-4 rounded-full mr-2 bg-red-500';
         }
+      } else {
+        el.className = 'w-4 h-4 rounded-full mr-2 bg-gray-300';
       }
-      
-      setAmpel('ts', 'tsAmpel');
-      setAmpel('roprotein', 'roproteinAmpel');
-      setAmpel('energie', 'energieAmpel');
-      setAmpel('zucker', 'zuckerAmpel');
-      setAmpel('rohfaser', 'rohfaserAmpel');
-      setAmpel('calciumPhosphor', 'calciumPhosphorAmpel');
-      setAmpel('magnesium', 'magnesiumAmpel');
-      setAmpel('zink', 'zinkAmpel');
-      setAmpel('natrium', 'natriumAmpel');
-      setAmpel('lysin', 'lysinAmpel');
-      setAmpel('methionin', 'methioninAmpel');
-      setAmpel('threonin', 'threoninAmpel');
     }
     
-    // Zeigt die aktiven Anpassungen (z. B. saisonale, senior- oder arbeitsbezogene)
     function updateAnpassungen() {
       const anpassungenBereich = document.getElementById('anpassungenBereich');
       const anpassungenListe = document.getElementById('anpassungenListe');
-      const pferdetyp = document.getElementById('pferdetyp').value;
-      const aktivitaet = document.getElementById('aktivitaet').value;
-      const haltung = document.getElementById('haltung').value;
-      const jahreszeit = document.getElementById('jahreszeit').value;
-      const isSenior = document.getElementById('isSenior').checked;
-      
       anpassungenListe.innerHTML = '';
       
-      if (gewichtsModus === 'zunehmen') {
+      if(gewichtsModus === 'zunehmen') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +10% für Gewichtszunahme';
         anpassungenListe.appendChild(li);
-      } else if (gewichtsModus === 'abnehmen') {
+      } else if(gewichtsModus === 'abnehmen') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf -15% für Gewichtsabnahme';
         anpassungenListe.appendChild(li);
       }
-      
-      if (jahreszeit === 'winter') {
+      if(document.getElementById('jahreszeit').value === 'winter') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +10% für Winterzeit';
         anpassungenListe.appendChild(li);
       }
-      
-      if (isSenior) {
+      if(document.getElementById('isSenior').checked) {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +15% für Senior-Pferd';
         anpassungenListe.appendChild(li);
       }
-      
-      if (haltung === 'offenstall') {
+      if(document.getElementById('haltung').value === 'offenstall') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +10% für Offenstallhaltung';
         anpassungenListe.appendChild(li);
-      } else if (haltung === 'aktivstall') {
+      } else if(document.getElementById('haltung').value === 'aktivstall') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +15% für Aktivstallhaltung';
         anpassungenListe.appendChild(li);
       }
-      
-      if (aktivitaet === 'leicht') {
+      if(document.getElementById('aktivitaet').value === 'leicht') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +10% für leichte Arbeit';
         anpassungenListe.appendChild(li);
-      } else if (aktivitaet === 'mittel') {
+      } else if(document.getElementById('aktivitaet').value === 'mittel') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +20% für mittlere Arbeit';
         anpassungenListe.appendChild(li);
-      } else if (aktivitaet === 'schwer') {
+      } else if(document.getElementById('aktivitaet').value === 'schwer') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +30% für schwere Arbeit';
         anpassungenListe.appendChild(li);
       }
-      
-      if (pferdetyp === 'vollblut') {
+      if(document.getElementById('pferdetyp').value === 'vollblut') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf +10% für Vollbluttyp';
         anpassungenListe.appendChild(li);
-      } else if (pferdetyp === 'pony' || pferdetyp === 'kaltblut') {
+      } else if(document.getElementById('pferdetyp').value === 'pony' || document.getElementById('pferdetyp').value === 'kaltblut') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf -5% für effiziente Futterverwertung';
         anpassungenListe.appendChild(li);
-      } else if (pferdetyp === 'shetlandpony') {
+      } else if(document.getElementById('pferdetyp').value === 'shetlandpony') {
         const li = document.createElement('li');
         li.textContent = 'Energiebedarf -10% für sehr effiziente Futterverwertung';
         anpassungenListe.appendChild(li);
       }
       
-      if (anpassungenListe.childNodes.length > 0) {
+      if(anpassungenListe.childNodes.length > 0) {
         anpassungenBereich.classList.remove('hidden');
       } else {
         anpassungenBereich.classList.add('hidden');
