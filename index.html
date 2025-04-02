@@ -99,114 +99,82 @@
           Bitte geben Sie das Gewicht des Pferdes ein, um die Bedarfsanalyse zu sehen.
         </div>
         <div id="ergebnisBereich" class="hidden">
-          <div class="grid grid-cols-1 gap-3">
-            <!-- Anzeige: Bedarf vs. Angebot pro Nährstoff -->
-            <div class="flex items-center">
-              <div id="ampel-trockensubstanz" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Trockensubstanz: Bedarf: <span id="bedarfTrockensubstanz">0.00</span> g, 
-                Gesamt: <span id="gesamtTrockensubstanz">0.00</span> g
-              </p>
+          <div class="grid grid-cols-1 gap-2">
+            <!-- Für jeden Nährstoff ein Grid mit 3 Spalten: Ampel, Bedarf, Gesamt -->
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-trockensubstanz" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Trockensubstanz (Bedarf): <span id="bedarfTrockensubstanz">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtTrockensubstanz">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-rohfaser" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Rohfaser: Bedarf: <span id="bedarfRohfaser">0.00</span> g, 
-                Gesamt: <span id="gesamtRohfaser">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-rohfaser" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Rohfaser (Bedarf): <span id="bedarfRohfaser">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtRohfaser">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-rohprotein" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Verdauliches Rohprotein: Bedarf: <span id="bedarfRohprotein">0.00</span> g, 
-                Gesamt: <span id="gesamtRohprotein">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-rohprotein" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Rohprotein (Bedarf): <span id="bedarfRohprotein">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtRohprotein">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-energie" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Energie: Bedarf: <span id="bedarfEnergie">0.00</span> MJ, 
-                Gesamt: <span id="gesamtEnergie">0.00</span> MJ
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-energie" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Energie (Bedarf): <span id="bedarfEnergie">0.00</span> MJ</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtEnergie">0.00</span> MJ</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-calcium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Calcium: Bedarf: <span id="bedarfCalcium">0.00</span> g, 
-                Gesamt: <span id="gesamtCalcium">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-calcium" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Calcium (Bedarf): <span id="bedarfCalcium">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtCalcium">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-phosphor" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Phosphor: Bedarf: <span id="bedarfPhosphor">0.00</span> g, 
-                Gesamt: <span id="gesamtPhosphor">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-phosphor" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Phosphor (Bedarf): <span id="bedarfPhosphor">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtPhosphor">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-magnesium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Magnesium: Bedarf: <span id="bedarfMagnesium">0.00</span> g, 
-                Gesamt: <span id="gesamtMagnesium">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-magnesium" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Magnesium (Bedarf): <span id="bedarfMagnesium">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtMagnesium">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-natrium" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Natrium: Bedarf: <span id="bedarfNatrium">0.00</span> g, 
-                Gesamt: <span id="gesamtNatrium">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-natrium" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Natrium (Bedarf): <span id="bedarfNatrium">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtNatrium">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-zucker" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Zucker: Bedarf: <span id="bedarfZucker">0.00</span> g, 
-                Gesamt: <span id="gesamtZucker">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-zucker" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Zucker (Bedarf): <span id="bedarfZucker">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtZucker">0.00</span> g</div>
             </div>
-            <!-- Zusätzliche Nährstoffe -->
-            <div class="flex items-center">
-              <div id="ampel-zink" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Zink: Bedarf: <span id="bedarfZink">0.00</span> g, 
-                Gesamt: <span id="gesamtZink">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-lysin" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Lysin (Bedarf): <span id="bedarfLysin">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtLysin">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-lysin" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Lysin: Bedarf: <span id="bedarfLysin">0.00</span> g, 
-                Gesamt: <span id="gesamtLysin">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-methionin" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Methionin (Bedarf): <span id="bedarfMethionin">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtMethionin">0.00</span> g</div>
             </div>
-            <div class="flex items-center">
-              <div id="ampel-methionin" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Methionin: Bedarf: <span id="bedarfMethionin">0.00</span> g, 
-                Gesamt: <span id="gesamtMethionin">0.00</span> g
-              </p>
-            </div>
-            <div class="flex items-center">
-              <div id="ampel-threonin" class="w-4 h-4 rounded-full mr-2 bg-gray-300"></div>
-              <p class="text-stone-700">
-                Threonin: Bedarf: <span id="bedarfThreonin">0.00</span> g, 
-                Gesamt: <span id="gesamtThreonin">0.00</span> g
-              </p>
+            <div class="grid grid-cols-3 items-center border-b border-pink-200 py-1">
+              <div id="ampel-threonin" class="w-4 h-4 rounded-full bg-gray-300"></div>
+              <div class="text-sm text-stone-700">Threonin (Bedarf): <span id="bedarfThreonin">0.00</span> g</div>
+              <div class="text-sm text-stone-700">Gesamt: <span id="gesamtThreonin">0.00</span> g</div>
             </div>
           </div>
           
-          <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="mt-4 grid grid-cols-3 gap-2">
             <div class="flex items-center">
               <div class="w-4 h-4 rounded-full mr-2 bg-green-500"></div>
               <p class="text-xs text-stone-700">Optimal</p>
             </div>
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-full mr-2 bg-yellow-500"></div>
-              <p class="text-xs text-stone-700">Grenzwertig</p>
+              <div class="w-4 h-4 rounded-full mr-2 bg-red-500"></div>
+              <p class="text-xs text-stone-700">Unterversorgt</p>
             </div>
             <div class="flex items-center">
-              <div class="w-4 h-4 rounded-full mr-2 bg-red-500"></div>
-              <p class="text-xs text-stone-700">Kritisch</p>
+              <div class="w-4 h-4 rounded-full mr-2 bg-black"></div>
+              <p class="text-xs text-stone-700">Überversorgt</p>
             </div>
           </div>
         </div>
@@ -226,7 +194,7 @@
           <ul id="anpassungenListe" class="text-xs text-stone-600 pl-4 list-disc"></ul>
         </div>
         <p class="text-sm text-stone-700 mt-2">
-          • Die Ampelfarben zeigen, ob die Nährstoffzufuhr im optimalen (grün), grenzwertigen (gelb) oder kritischen (rot) Bereich liegt.
+          • Die Ampelfarben zeigen an: Rot = unterversorgt, Schwarz = überversorgt, Grün = optimal.
         </p>
       </div>
     </div>
@@ -245,7 +213,6 @@
         calcium: 20,
         phosphor: 10,
         magnesium: 5,
-        zink: 2,
         natrium: 3,
         lysin: 4,
         methionin: 1.5,
@@ -261,7 +228,6 @@
         calcium: 10,
         phosphor: 3,
         magnesium: 2,
-        zink: 2,
         natrium: 1,
         lysin: 20,
         methionin: 6,
@@ -277,7 +243,6 @@
         calcium: 12,
         phosphor: 4,
         magnesium: 2.5,
-        zink: 1.5,
         natrium: 0.8,
         lysin: 18,
         methionin: 5,
@@ -366,7 +331,6 @@
       magnesium: 0,
       natrium: 0,
       zucker: 0,
-      zink: 0,
       lysin: 0,
       methionin: 0,
       threonin: 0
@@ -415,7 +379,6 @@
         calcium: 0,
         phosphor: 0,
         magnesium: 0,
-        zink: 0,
         natrium: 0,
         lysin: 0,
         methionin: 0,
@@ -484,10 +447,6 @@
             <input type="number" id="magnesium-${id}" class="w-full p-2 border border-pink-200 rounded">
           </div>
           <div>
-            <label class="block text-sm text-stone-700 mb-1">Zink (g/kg):</label>
-            <input type="number" id="zink-${id}" class="w-full p-2 border border-pink-200 rounded">
-          </div>
-          <div>
             <label class="block text-sm text-stone-700 mb-1">Natrium (g/kg):</label>
             <input type="number" id="natrium-${id}" class="w-full p-2 border border-pink-200 rounded">
           </div>
@@ -519,11 +478,7 @@
           document.getElementById(`calcium-${id}`).value = presetData.calcium;
           document.getElementById(`phosphor-${id}`).value = presetData.phosphor;
           document.getElementById(`magnesium-${id}`).value = presetData.magnesium;
-          document.getElementById(`zink-${id}`).value = presetData.zink;
           document.getElementById(`natrium-${id}`).value = presetData.natrium;
-          document.getElementById(`lysin-${id}`).value = presetData.lysin;
-          document.getElementById(`methionin-${id}`).value = presetData.methionin;
-          document.getElementById(`threonin-${id}`).value = presetData.threonin;
           let nameField = document.getElementById(`name-${id}`);
           if (!nameField.value.trim()) {
             nameField.value = presetData.name;
@@ -537,7 +492,6 @@
           updateFuttermittel(id, "calcium", presetData.calcium);
           updateFuttermittel(id, "phosphor", presetData.phosphor);
           updateFuttermittel(id, "magnesium", presetData.magnesium);
-          updateFuttermittel(id, "zink", presetData.zink);
           updateFuttermittel(id, "natrium", presetData.natrium);
           updateFuttermittel(id, "lysin", presetData.lysin);
           updateFuttermittel(id, "methionin", presetData.methionin);
@@ -545,7 +499,7 @@
         }
       });
       
-      const fields = ['name','menge','trockensubstanz','rohprotein','energie','zucker','rohfaser','calcium','phosphor','magnesium','zink','natrium','lysin','methionin','threonin'];
+      const fields = ['name','menge','trockensubstanz','rohprotein','energie','zucker','rohfaser','calcium','phosphor','magnesium','natrium','lysin','methionin','threonin'];
       fields.forEach(field => {
         document.getElementById(`${field}-${id}`).addEventListener('input', (e) => {
           let value = (field === 'name') ? e.target.value : parseFloat(e.target.value);
@@ -643,9 +597,7 @@
       bedarf.magnesium       = baseDemand.Magnesium;
       bedarf.natrium         = baseDemand.Natrium;
       bedarf.zucker          = baseDemand.Zucker;
-      
-      // Zusätzliche Nährstoffe (Faktor bleibt unverändert, da  TM * Faktor in g die korrekte Menge ergibt)
-      bedarf.zink       = 0;
+      // Zusätzliche Nährstoffe
       bedarf.lysin      = bedarf.trockensubstanz * 0.0315;
       bedarf.methionin  = bedarf.trockensubstanz * 0.0055;
       bedarf.threonin   = bedarf.trockensubstanz * 0.0025;
@@ -661,7 +613,6 @@
       document.getElementById('bedarfMagnesium').textContent = bedarf.magnesium.toFixed(2);
       document.getElementById('bedarfNatrium').textContent = bedarf.natrium.toFixed(2);
       document.getElementById('bedarfZucker').textContent = bedarf.zucker.toFixed(2);
-      document.getElementById('bedarfZink').textContent = bedarf.zink.toFixed(2);
       document.getElementById('bedarfLysin').textContent = bedarf.lysin.toFixed(2);
       document.getElementById('bedarfMethionin').textContent = bedarf.methionin.toFixed(2);
       document.getElementById('bedarfThreonin').textContent = bedarf.threonin.toFixed(2);
@@ -683,14 +634,12 @@
       let gesamtPhosphor = 0;
       let gesamtMagnesium = 0;
       let gesamtNatrium = 0;
-      let gesamtZink = 0;
       let gesamtLysin = 0;
       let gesamtMethionin = 0;
       let gesamtThreonin = 0;
       
       futtermittelListe.forEach(item => {
         gesamtMenge += item.menge;
-        // Da item.menge in kg und die Nährstoffwerte in g/kg vorliegen:
         gesamtTrockensubstanz += item.menge * item.trockensubstanz;
         gesamtRohprotein      += item.menge * item.rohprotein;
         gesamtEnergie         += item.menge * item.energie;
@@ -700,7 +649,6 @@
         gesamtPhosphor        += item.menge * item.phosphor;
         gesamtMagnesium       += item.menge * item.magnesium;
         gesamtNatrium         += item.menge * item.natrium;
-        gesamtZink            += item.menge * item.zink;
         gesamtLysin           += item.menge * item.lysin;
         gesamtMethionin       += item.menge * item.methionin;
         gesamtThreonin        += item.menge * item.threonin;
@@ -716,36 +664,34 @@
       document.getElementById('gesamtPhosphor').textContent = gesamtPhosphor.toFixed(2);
       document.getElementById('gesamtMagnesium').textContent = gesamtMagnesium.toFixed(2);
       document.getElementById('gesamtNatrium').textContent = gesamtNatrium.toFixed(2);
-      document.getElementById('gesamtZink').textContent = gesamtZink.toFixed(2);
       document.getElementById('gesamtLysin').textContent = gesamtLysin.toFixed(2);
       document.getElementById('gesamtMethionin').textContent = gesamtMethionin.toFixed(2);
       document.getElementById('gesamtThreonin').textContent = gesamtThreonin.toFixed(2);
       
       updateAmpelfarbe('ampel-trockensubstanz', gesamtTrockensubstanz, bedarf.trockensubstanz);
+      updateAmpelfarbe('ampel-rohfaser', gesamtRohfaser, bedarf.rohfaser);
       updateAmpelfarbe('ampel-rohprotein', gesamtRohprotein, bedarf.rohprotein);
       updateAmpelfarbe('ampel-energie', gesamtEnergie, bedarf.energie);
       updateAmpelfarbe('ampel-zucker', gesamtZucker, bedarf.zucker);
-      updateAmpelfarbe('ampel-rohfaser', gesamtRohfaser, bedarf.rohfaser);
       updateAmpelfarbe('ampel-calcium', gesamtCalcium, bedarf.calcium);
       updateAmpelfarbe('ampel-phosphor', gesamtPhosphor, bedarf.phosphor);
       updateAmpelfarbe('ampel-magnesium', gesamtMagnesium, bedarf.magnesium);
       updateAmpelfarbe('ampel-natrium', gesamtNatrium, bedarf.natrium);
-      updateAmpelfarbe('ampel-zink', gesamtZink, bedarf.zink);
       updateAmpelfarbe('ampel-lysin', gesamtLysin, bedarf.lysin);
       updateAmpelfarbe('ampel-methionin', gesamtMethionin, bedarf.methionin);
       updateAmpelfarbe('ampel-threonin', gesamtThreonin, bedarf.threonin);
     }
     
+    // Neue Ampelfunktion: Rot bei Unterversorgung, Schwarz bei Überversorgung, Grün wenn exakt
     function updateAmpelfarbe(elementId, supply, requirement) {
       const el = document.getElementById(elementId);
       if (requirement > 0) {
-        const percent = (supply / requirement) * 100;
-        if (percent >= 90 && percent <= 110) {
-          el.className = 'w-4 h-4 rounded-full mr-2 bg-green-500';
-        } else if ((percent >= 70 && percent < 90) || (percent > 110 && percent <= 130)) {
-          el.className = 'w-4 h-4 rounded-full mr-2 bg-yellow-500';
-        } else {
+        if (supply < requirement) {
           el.className = 'w-4 h-4 rounded-full mr-2 bg-red-500';
+        } else if (supply > requirement) {
+          el.className = 'w-4 h-4 rounded-full mr-2 bg-black';
+        } else {
+          el.className = 'w-4 h-4 rounded-full mr-2 bg-green-500';
         }
       } else {
         el.className = 'w-4 h-4 rounded-full mr-2 bg-gray-300';
