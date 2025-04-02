@@ -479,6 +479,11 @@
           document.getElementById(`phosphor-${id}`).value = presetData.phosphor;
           document.getElementById(`magnesium-${id}`).value = presetData.magnesium;
           document.getElementById(`natrium-${id}`).value = presetData.natrium;
+          // Hier werden zusätzlich die Werte für Lysin, Methionin und Threonin gesetzt
+          document.getElementById(`lysin-${id}`).value = presetData.lysin;
+          document.getElementById(`methionin-${id}`).value = presetData.methionin;
+          document.getElementById(`threonin-${id}`).value = presetData.threonin;
+          
           let nameField = document.getElementById(`name-${id}`);
           if (!nameField.value.trim()) {
             nameField.value = presetData.name;
