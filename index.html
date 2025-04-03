@@ -91,6 +91,11 @@
         + Futtermittel hinzufügen
       </button>
       
+      <!-- Speichern Button -->
+      <button id="saveData" class="mt-3 w-full p-2 bg-blue-300 hover:bg-blue-400 text-stone-800 rounded">
+        Daten speichern
+      </button>
+      
       <!-- Bedarfsanalyse -->
       <div class="mt-6 p-4 bg-stone-100 rounded border border-pink-200">
         <h3 class="font-bold mb-3 text-pink-700">Bedarfsanalyse:</h3>
@@ -337,8 +342,82 @@
     };
     let gewichtsModus = 'halten';
     
+    // --- Funktionen zum Speichern und Laden der Daten ---
+    function saveData() {
+      const data = {
+        gewicht: document.getElementById('gewicht').value,
+        zielgewicht: document.getElementById('zielgewicht').value,
+        pferdetyp: document.getElementById('pferdetyp').value,
+        jahreszeit: document.getElementById('jahreszeit').value,
+        aktivitaet: document.getElementById('aktivitaet').value,
+        haltung: document.getElementById('haltung').value,
+        isSenior: document.getElementById('isSenior').checked,
+        futtermittelListe: futtermittelListe
+      };
+      localStorage.setItem('pferdeDaten', JSON.stringify(data));
+      alert("Daten wurden gespeichert!");
+    }
+    
+    function loadData() {
+      const saved = localStorage.getItem('pferdeDaten');
+      if (saved) {
+        const data = JSON.parse(saved);
+        document.getElementById('gewicht').value = data.gewicht || "";
+        document.getElementById('zielgewicht').value = data.zielgewicht || "";
+        document.getElementById('pferdetyp').value = data.pferdetyp || "warmblut";
+        document.getElementById('jahreszeit').value = data.jahreszeit || "normal";
+        document.getElementById('aktivitaet').value = data.aktivitaet || "erhaltung";
+        document.getElementById('haltung').value = data.haltung || "standard";
+        document.getElementById('isSenior').checked = data.isSenior || false;
+        
+        // Bestehende Futtermittel entfernen und Liste neu aufbauen
+        futtermittelListe = [];
+        document.getElementById('futtermittelContainer').innerHTML = "";
+        if (data.futtermittelListe && Array.isArray(data.futtermittelListe)) {
+          data.futtermittelListe.forEach(item => {
+            addFuttermittel(); // Erzeugt ein neues Element und erhöht naechsteId
+            // letzte hinzugefügte Instanz ermitteln:
+            let currentId = naechsteId - 1;
+            // Update des aktuellen Futtermittel-Eintrags:
+            updateFuttermittel(currentId, "name", item.name);
+            updateFuttermittel(currentId, "menge", item.menge);
+            updateFuttermittel(currentId, "trockensubstanz", item.trockensubstanz);
+            updateFuttermittel(currentId, "rohprotein", item.rohprotein);
+            updateFuttermittel(currentId, "energie", item.energie);
+            updateFuttermittel(currentId, "zucker", item.zucker);
+            updateFuttermittel(currentId, "rohfaser", item.rohfaser);
+            updateFuttermittel(currentId, "calcium", item.calcium);
+            updateFuttermittel(currentId, "phosphor", item.phosphor);
+            updateFuttermittel(currentId, "magnesium", item.magnesium);
+            updateFuttermittel(currentId, "natrium", item.natrium);
+            updateFuttermittel(currentId, "lysin", item.lysin);
+            updateFuttermittel(currentId, "methionin", item.methionin);
+            updateFuttermittel(currentId, "threonin", item.threonin);
+            
+            // Felder in der Maske aktualisieren:
+            document.getElementById(`name-${currentId}`).value = item.name;
+            document.getElementById(`menge-${currentId}`).value = item.menge;
+            document.getElementById(`trockensubstanz-${currentId}`).value = item.trockensubstanz;
+            document.getElementById(`rohprotein-${currentId}`).value = item.rohprotein;
+            document.getElementById(`energie-${currentId}`).value = item.energie;
+            document.getElementById(`zucker-${currentId}`).value = item.zucker;
+            document.getElementById(`rohfaser-${currentId}`).value = item.rohfaser;
+            document.getElementById(`calcium-${currentId}`).value = item.calcium;
+            document.getElementById(`phosphor-${currentId}`).value = item.phosphor;
+            document.getElementById(`magnesium-${currentId}`).value = item.magnesium;
+            document.getElementById(`natrium-${currentId}`).value = item.natrium;
+            document.getElementById(`lysin-${currentId}`).value = item.lysin;
+            document.getElementById(`methionin-${currentId}`).value = item.methionin;
+            document.getElementById(`threonin-${currentId}`).value = item.threonin;
+          });
+        }
+        updateBedarfsberechnung();
+      }
+    }
+    
     // --- Event Listener beim Laden des Dokuments ---
     document.addEventListener('DOMContentLoaded', function() {
+      loadData();  // Versuche, zuvor gespeicherte Daten zu laden
       addFuttermittel();
       const inputs = ['gewicht', 'zielgewicht', 'pferdetyp', 'jahreszeit', 'aktivitaet', 'haltung'];
       inputs.forEach(id => {
@@ -361,6 +440,7 @@
       
       document.getElementById('berechnenSenior').addEventListener('click', updateBedarfsberechnung);
       document.getElementById('addFuttermittel').addEventListener('click', addFuttermittel);
+      document.getElementById('saveData').addEventListener('click', saveData);
     });
     
     // --- Futtermittel hinzufügen (inkl. Preset-Auswahl) ---
@@ -479,7 +559,6 @@
           document.getElementById(`phosphor-${id}`).value = presetData.phosphor;
           document.getElementById(`magnesium-${id}`).value = presetData.magnesium;
           document.getElementById(`natrium-${id}`).value = presetData.natrium;
-          // Hier werden zusätzlich die Werte für Lysin, Methionin und Threonin gesetzt
           document.getElementById(`lysin-${id}`).value = presetData.lysin;
           document.getElementById(`methionin-${id}`).value = presetData.methionin;
           document.getElementById(`threonin-${id}`).value = presetData.threonin;
