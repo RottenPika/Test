@@ -376,9 +376,7 @@
         if (data.futtermittelListe && Array.isArray(data.futtermittelListe)) {
           data.futtermittelListe.forEach(item => {
             addFuttermittel(); // Erzeugt ein neues Element und erhöht naechsteId
-            // letzte hinzugefügte Instanz ermitteln:
             let currentId = naechsteId - 1;
-            // Update des aktuellen Futtermittel-Eintrags:
             updateFuttermittel(currentId, "name", item.name);
             updateFuttermittel(currentId, "menge", item.menge);
             updateFuttermittel(currentId, "trockensubstanz", item.trockensubstanz);
@@ -393,8 +391,6 @@
             updateFuttermittel(currentId, "lysin", item.lysin);
             updateFuttermittel(currentId, "methionin", item.methionin);
             updateFuttermittel(currentId, "threonin", item.threonin);
-            
-            // Felder in der Maske aktualisieren:
             document.getElementById(`name-${currentId}`).value = item.name;
             document.getElementById(`menge-${currentId}`).value = item.menge;
             document.getElementById(`trockensubstanz-${currentId}`).value = item.trockensubstanz;
@@ -417,7 +413,7 @@
     
     // --- Event Listener beim Laden des Dokuments ---
     document.addEventListener('DOMContentLoaded', function() {
-      loadData();  // Versuche, zuvor gespeicherte Daten zu laden
+      loadData();
       addFuttermittel();
       const inputs = ['gewicht', 'zielgewicht', 'pferdetyp', 'jahreszeit', 'aktivitaet', 'haltung'];
       inputs.forEach(id => {
@@ -615,7 +611,7 @@
       }
     }
     
-    // --- Bedarfsermittlung anhand der PDF-Werte und Modifier ---
+    // --- Aktualisierte Bedarfsermittlung inklusive pferdetypischer Anpassung ---
     function updateBedarfsberechnung() {
       const gewicht = parseFloat(document.getElementById('gewicht').value) || 0;
       const zielgewicht = parseFloat(document.getElementById('zielgewicht').value) || 0;
@@ -648,7 +644,7 @@
         gewichtsModus = 'halten';
       }
       
-      // Auswahl der passenden Tabelle
+      // Auswahl der passenden Tabelle basierend auf Arbeitsintensität
       const intensityMapping = {
         "erhaltung": "Erhaltung",
         "leicht": "Leichte",
@@ -657,21 +653,34 @@
       };
       const selectedTable = intensityMapping[aktivitaet] || "Erhaltung";
       
-      // Basisbedarf aus der PDF-Tabelle (Werte in g bzw. MJ)
+      // Basisbedarf aus der PDF-Tabelle (Werte in g bzw. MJ) für das angegebene Gewicht
       let baseDemand = getDemandValues(gewicht, selectedTable);
       
-      // Modifier: Senior, Winter, Haltungsform jeweils +10%
+      // --- Pferdetyp-Anpassung ---
+      // Hier wird ein Faktor anhand des Pferdetyps festgelegt.
+      let typFaktor = 1.0;
+      switch(pferdetyp) {
+          case 'shetlandpony': typFaktor = 0.9; break;
+          case 'pony': typFaktor = 0.95; break;
+          case 'vollblut': typFaktor = 1.1; break;
+          case 'warmblut': typFaktor = 1.0; break;
+          case 'kaltblut': typFaktor = 0.95; break;
+          default: typFaktor = 1.0;
+      }
+      
+      // Modifier: Senior, Winter, Haltungsform, sowie der pferdetypische Faktor
       let multiplier = 1.0;
       if (isSenior) multiplier *= 1.10;
       if (jahreszeit === "winter") multiplier *= 1.10;
       if (haltung !== "standard") multiplier *= 1.10;
+      multiplier *= typFaktor;
       
-      // Anwenden des Multiplikators
+      // Anwenden des Multiplikators auf die Basisbedarfswerte
       for (let key in baseDemand) {
         baseDemand[key] *= multiplier;
       }
       
-      // Setze die Zielwerte – direkte Anzeige in g (Energie bleibt in MJ)
+      // Aktualisierung der globalen Bedarfswerte
       bedarf.trockensubstanz = baseDemand.TM;
       bedarf.rohfaser        = baseDemand.Rohfaser;
       bedarf.rohprotein      = baseDemand.Rohprotein;
@@ -681,13 +690,12 @@
       bedarf.magnesium       = baseDemand.Magnesium;
       bedarf.natrium         = baseDemand.Natrium;
       bedarf.zucker          = baseDemand.Zucker;
-      // Zusätzliche Nährstoffe
+      // Zusätzliche Nährstoffe (als Anteil der Trockensubstanz)
       bedarf.lysin      = bedarf.trockensubstanz * 0.00315;
       bedarf.methionin  = bedarf.trockensubstanz * 0.0055;
       bedarf.threonin   = bedarf.trockensubstanz * 0.0025;
       
-      // Anzeige der ermittelten Bedarfswerte
-      document.getElementById('bedarfHeu').textContent = (baseDemand.TM / 1000).toFixed(2);
+      // Update der Anzeige
       document.getElementById('bedarfTrockensubstanz').textContent = bedarf.trockensubstanz.toFixed(2);
       document.getElementById('bedarfRohfaser').textContent = bedarf.rohfaser.toFixed(2);
       document.getElementById('bedarfRohprotein').textContent = bedarf.rohprotein.toFixed(2);
@@ -809,6 +817,21 @@
       if (document.getElementById('haltung').value !== 'standard') {
         const li = document.createElement('li');
         li.textContent = 'Haltungsform (' + document.getElementById('haltung').value + '): +10% Energiebedarf';
+        anpassungenListe.appendChild(li);
+      }
+      // Pferdetyp-Anpassung in der Zusammenfassung
+      const pferdetyp = document.getElementById('pferdetyp').value;
+      if (pferdetyp === 'vollblut') {
+        const li = document.createElement('li');
+        li.textContent = 'Energiebedarf +10% für Vollbluttyp';
+        anpassungenListe.appendChild(li);
+      } else if (pferdetyp === 'pony' || pferdetyp === 'kaltblut') {
+        const li = document.createElement('li');
+        li.textContent = 'Energiebedarf -5% für effiziente Futterverwertung';
+        anpassungenListe.appendChild(li);
+      } else if (pferdetyp === 'shetlandpony') {
+        const li = document.createElement('li');
+        li.textContent = 'Energiebedarf -10% für sehr effiziente Futterverwertung';
         anpassungenListe.appendChild(li);
       }
       
